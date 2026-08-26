@@ -1,1 +1,2892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
 
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Thread & Loom is a fashion fabric marketplace where buyers discover quality fabrics and independent sellers list their products."
+  >
+
+  <meta
+    name="keywords"
+    content="fashion fabric, fabric marketplace, sewing supplies, textiles, fabric Philippines"
+  >
+
+  <meta name="theme-color" content="#5B2333">
+
+  <title>Thread & Loom | Fashion Fabric Marketplace</title>
+
+  <style>
+    /* =========================================================
+       RESET
+    ========================================================= */
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: #faf8f5;
+      color: #1d1b1a;
+      line-height: 1.6;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    /* =========================================================
+       VARIABLES
+    ========================================================= */
+
+    :root {
+      --primary: #5b2333;
+      --primary-dark: #431925;
+      --secondary: #c79a72;
+      --cream: #faf8f5;
+      --surface: #ffffff;
+      --soft: #eee6df;
+      --text: #1d1b1a;
+      --muted: #6d6864;
+      --border: #ded7d1;
+
+      --max-width: 1200px;
+
+      --shadow:
+        0 20px 50px rgba(29, 27, 26, 0.08);
+
+      --radius: 18px;
+    }
+
+    /* =========================================================
+       UTILITY
+    ========================================================= */
+
+    .container {
+      width: min(
+        calc(100% - 40px),
+        var(--max-width)
+      );
+
+      margin-inline: auto;
+    }
+
+    .section {
+      padding: 100px 0;
+    }
+
+    .eyebrow {
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin-top: 10px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      max-width: 650px;
+      margin-top: 16px;
+    }
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+
+      background:
+        rgba(250, 248, 245, 0.94);
+
+      backdrop-filter: blur(16px);
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .header-inner {
+      min-height: 74px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+
+      text-decoration: none;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+
+      white-space: nowrap;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 10px;
+
+      background: var(--primary);
+      color: white;
+
+      font-size: 0.78rem;
+      letter-spacing: 0;
+    }
+
+    .main-navigation {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .main-navigation a {
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 650;
+
+      color: var(--text);
+
+      transition:
+        color 0.2s ease;
+    }
+
+    .main-navigation a:hover {
+      color: var(--primary);
+    }
+
+    .mobile-menu-button {
+      display: none;
+
+      border: 0;
+      background: transparent;
+
+      font-size: 1.5rem;
+    }
+
+    /* =========================================================
+       BUTTONS
+    ========================================================= */
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 46px;
+
+      padding:
+        0 20px;
+
+      border-radius: 999px;
+
+      border: 1px solid transparent;
+
+      background: var(--primary);
+      color: white;
+
+      text-decoration: none;
+
+      font-weight: 750;
+
+      transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .button-outline {
+      background: transparent;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .button-outline:hover {
+      color: white;
+    }
+
+    .button-light {
+      background: white;
+      color: var(--primary);
+    }
+
+    .button-light:hover {
+      background: #f3eeee;
+    }
+
+    /* =========================================================
+       HERO
+       Rule of thirds + visual hierarchy
+    ========================================================= */
+
+    .hero {
+      min-height: calc(100vh - 74px);
+
+      display: grid;
+
+      grid-template-columns:
+        1.15fr
+        0.85fr;
+
+      align-items: center;
+
+      gap: 70px;
+
+      padding:
+        80px 0;
+    }
+
+    .hero-content {
+      max-width: 720px;
+    }
+
+    .hero-title {
+      margin-top: 15px;
+
+      font-size:
+        clamp(3rem, 7vw, 6.4rem);
+
+      line-height:
+        0.96;
+
+      letter-spacing:
+        -0.065em;
+    }
+
+    .hero-title span {
+      color: var(--primary);
+    }
+
+    .hero-description {
+      margin-top: 26px;
+
+      max-width: 650px;
+
+      color: var(--muted);
+
+      font-size:
+        clamp(1rem, 2vw, 1.2rem);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+
+      gap: 12px;
+
+      margin-top: 32px;
+    }
+
+    .hero-visual {
+      min-height: 500px;
+
+      position: relative;
+
+      overflow: hidden;
+
+      border-radius: 30px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #e8d6c9,
+          #b98c78
+        );
+
+      box-shadow:
+        var(--shadow);
+    }
+
+    .fabric {
+      position: absolute;
+
+      border-radius: 50%;
+    }
+
+    .fabric-one {
+      width: 390px;
+      height: 390px;
+
+      top: -100px;
+      right: -80px;
+
+      background: #6b3144;
+    }
+
+    .fabric-two {
+      width: 310px;
+      height: 310px;
+
+      bottom: -80px;
+      left: -90px;
+
+      background: #d7ae8c;
+    }
+
+    .fabric-three {
+      width: 230px;
+      height: 230px;
+
+      top: 38%;
+      left: 35%;
+
+      background: #4c5960;
+    }
+
+    .hero-label {
+      position: absolute;
+
+      left: 28px;
+      bottom: 28px;
+
+      z-index: 2;
+
+      padding: 18px 20px;
+
+      border-radius: 14px;
+
+      background:
+        rgba(255, 255, 255, 0.9);
+
+      backdrop-filter: blur(10px);
+
+      box-shadow:
+        0 10px 30px
+        rgba(0, 0, 0, 0.08);
+    }
+
+    .hero-label strong {
+      display: block;
+      font-size: 1.1rem;
+    }
+
+    /* =========================================================
+       FEATURE SECTION
+    ========================================================= */
+
+    .features-section {
+      background: #f0ebe6;
+    }
+
+    .features-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 18px;
+
+      margin-top: 45px;
+    }
+
+    .feature-card {
+      background: white;
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        var(--radius);
+
+      padding: 30px;
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+    }
+
+    .feature-number {
+      color: var(--primary);
+
+      font-size: 0.8rem;
+
+      font-weight: 900;
+
+      letter-spacing: 0.1em;
+    }
+
+    .feature-card h3 {
+      margin-top: 14px;
+
+      font-size: 1.4rem;
+    }
+
+    .feature-card p {
+      margin-top: 8px;
+
+      color: var(--muted);
+    }
+
+    /* =========================================================
+       STORE
+    ========================================================= */
+
+    .store-header {
+      display: flex;
+
+      justify-content: space-between;
+      align-items: end;
+
+      gap: 20px;
+    }
+
+    .category-list {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+      margin-top: 30px;
+    }
+
+    .category-button {
+      border:
+        1px solid var(--border);
+
+      background: white;
+
+      color: var(--text);
+
+      border-radius: 999px;
+
+      padding: 9px 15px;
+
+      font-weight: 650;
+    }
+
+    .category-button:hover,
+    .category-button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .products-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 18px;
+
+      margin-top: 35px;
+    }
+
+    .product-card {
+      overflow: hidden;
+
+      background: white;
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        var(--radius);
+    }
+
+    .product-image {
+      aspect-ratio: 1 / 1;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          #eaded5,
+          #c9aaa0
+        );
+
+      color: var(--primary);
+
+      font-weight: 900;
+
+      letter-spacing: 0.05em;
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-category {
+      color: var(--muted);
+
+      font-size: 0.78rem;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.08em;
+    }
+
+    .product-name {
+      margin-top: 5px;
+
+      font-size: 1.15rem;
+    }
+
+    .product-price {
+      margin-top: 8px;
+
+      color: var(--primary);
+
+      font-weight: 900;
+    }
+
+    .product-rating {
+      margin-top: 6px;
+
+      color: #b77a24;
+
+      font-size: 0.9rem;
+    }
+
+    .product-actions {
+      display: flex;
+
+      gap: 8px;
+
+      margin-top: 15px;
+    }
+
+    .product-actions .button {
+      flex: 1;
+
+      min-height: 40px;
+
+      padding:
+        0 12px;
+
+      font-size: 0.85rem;
+    }
+
+    /* =========================================================
+       ABOUT
+    ========================================================= */
+
+    .about-section {
+      border-top:
+        1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+
+      grid-template-columns:
+        1fr
+        1fr;
+
+      gap: 100px;
+
+      align-items: center;
+    }
+
+    .about-text {
+      font-size: 1.15rem;
+
+      color: var(--muted);
+    }
+
+    .about-points {
+      display: grid;
+
+      gap: 14px;
+
+      margin-top: 25px;
+    }
+
+    .about-point {
+      padding: 18px;
+
+      border-left:
+        3px solid var(--primary);
+
+      background: white;
+    }
+
+    /* =========================================================
+       CTA
+    ========================================================= */
+
+    .cta-section {
+      padding: 80px 0;
+    }
+
+    .cta {
+      padding: 70px 60px;
+
+      border-radius:
+        28px;
+
+      background:
+        var(--primary);
+
+      color: white;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 30px;
+    }
+
+    .cta h2 {
+      font-size:
+        clamp(2rem, 4vw, 3.5rem);
+
+      line-height: 1;
+
+      letter-spacing:
+        -0.04em;
+    }
+
+    .cta p {
+      margin-top: 12px;
+
+      color: #eadfe2;
+
+      max-width: 600px;
+    }
+
+    /* =========================================================
+       CONTACT
+    ========================================================= */
+
+    .contact-grid {
+      display: grid;
+
+      grid-template-columns:
+        1fr
+        1fr;
+
+      gap: 60px;
+    }
+
+    .contact-card {
+      background: white;
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        var(--radius);
+
+      padding: 30px;
+    }
+
+    .contact-item {
+      padding:
+        15px 0;
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .contact-item:last-child {
+      border-bottom: 0;
+    }
+
+    .contact-item strong {
+      display: block;
+    }
+
+    .contact-item span {
+      color: var(--muted);
+    }
+
+    /* =========================================================
+       AUTH MODAL
+    ========================================================= */
+
+    .modal {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 2000;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      background:
+        rgba(0, 0, 0, 0.55);
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(100%, 480px);
+
+      max-height: 90vh;
+
+      overflow-y: auto;
+
+      background: white;
+
+      border-radius:
+        var(--radius);
+
+      padding: 30px;
+
+      box-shadow:
+        0 30px 80px
+        rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+    }
+
+    .modal-close {
+      border: 0;
+
+      background: transparent;
+
+      font-size: 1.5rem;
+    }
+
+    .auth-form {
+      margin-top: 25px;
+
+      display: grid;
+
+      gap: 14px;
+    }
+
+    .auth-form label {
+      font-size: 0.9rem;
+
+      font-weight: 700;
+    }
+
+    .auth-form input,
+    .auth-form select {
+      width: 100%;
+
+      margin-top: 6px;
+
+      padding: 12px 14px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        10px;
+
+      outline: none;
+    }
+
+    .auth-form input:focus,
+    .auth-form select:focus {
+      border-color:
+        var(--primary);
+    }
+
+    .form-message {
+      min-height: 24px;
+
+      color: var(--primary);
+
+      font-size: 0.9rem;
+    }
+
+    /* =========================================================
+       CHATBOT
+    ========================================================= */
+
+    .chatbot {
+      position: fixed;
+
+      right: 22px;
+      bottom: 22px;
+
+      z-index: 1500;
+    }
+
+    .chat-button {
+      width: 58px;
+      height: 58px;
+
+      border: 0;
+
+      border-radius: 50%;
+
+      background: var(--primary);
+
+      color: white;
+
+      font-weight: 900;
+
+      box-shadow: var(--shadow);
+    }
+
+    .chat-window {
+      position: absolute;
+
+      right: 0;
+      bottom: 70px;
+
+      width: min(
+        360px,
+        calc(100vw - 30px)
+      );
+
+      height: 450px;
+
+      background: white;
+
+      border:
+        1px solid var(--border);
+
+      border-radius:
+        var(--radius);
+
+      box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, 0.16);
+
+      display: none;
+
+      flex-direction: column;
+
+      overflow: hidden;
+    }
+
+    .chat-window.open {
+      display: flex;
+    }
+
+    .chat-header {
+      padding: 16px;
+
+      background: var(--primary);
+
+      color: white;
+
+      display: flex;
+
+      justify-content: space-between;
+    }
+
+    .chat-close {
+      border: 0;
+
+      background: transparent;
+
+      color: white;
+
+      font-size: 1.3rem;
+    }
+
+    .chat-messages {
+      flex: 1;
+
+      padding: 15px;
+
+      overflow-y: auto;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 82%;
+
+      padding: 9px 12px;
+
+      border-radius: 12px;
+
+      font-size: 0.9rem;
+    }
+
+    .message.bot {
+      background: #f0ebe6;
+    }
+
+    .message.user {
+      align-self: flex-end;
+
+      background: var(--primary);
+
+      color: white;
+    }
+
+    .chat-form {
+      display: flex;
+
+      border-top:
+        1px solid var(--border);
+    }
+
+    .chat-form input {
+      flex: 1;
+
+      border: 0;
+
+      padding: 12px;
+
+      outline: none;
+    }
+
+    .chat-form button {
+      border: 0;
+
+      padding: 0 15px;
+
+      background: var(--primary);
+
+      color: white;
+    }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
+    .site-footer {
+      padding: 65px 0 30px;
+
+      background:
+        #1d1b1a;
+
+      color: white;
+    }
+
+    .footer-grid {
+      display: grid;
+
+      grid-template-columns:
+        2fr
+        1fr
+        1fr
+        1fr;
+
+      gap: 40px;
+    }
+
+    .footer-column h3 {
+      font-size: 1rem;
+    }
+
+    .footer-column p,
+    .footer-column a {
+      margin-top: 8px;
+
+      color: #cfc9c5;
+
+      text-decoration: none;
+
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: grid;
+
+      gap: 4px;
+    }
+
+    .footer-bottom {
+      margin-top: 50px;
+
+      padding-top: 20px;
+
+      border-top:
+        1px solid #3a3633;
+
+      color: #aaa29d;
+
+      font-size: 0.8rem;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 1000px) {
+
+      .hero {
+        grid-template-columns: 1fr;
+
+        padding:
+          70px 0;
+      }
+
+      .hero-visual {
+        min-height: 400px;
+      }
+
+      .products-grid {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .features-grid {
+        grid-template-columns:
+          1fr;
+      }
+
+      .footer-grid {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+
+      .main-navigation {
+        display: none;
+
+        position: absolute;
+
+        top: 74px;
+        left: 0;
+        right: 0;
+
+        padding: 20px;
+
+        background: var(--cream);
+
+        border-bottom:
+          1px solid var(--border);
+
+        flex-direction: column;
+
+        align-items: stretch;
+      }
+
+      .main-navigation.open {
+        display: flex;
+      }
+
+      .main-navigation a {
+        padding: 8px;
+      }
+
+      .mobile-menu-button {
+        display: block;
+      }
+
+      .hero-title {
+        font-size:
+          clamp(3rem, 15vw, 5rem);
+      }
+
+      .products-grid {
+        grid-template-columns:
+          1fr;
+      }
+
+      .about-grid,
+      .contact-grid {
+        grid-template-columns:
+          1fr;
+
+        gap: 40px;
+      }
+
+      .store-header {
+        align-items: start;
+
+        flex-direction: column;
+      }
+
+      .cta {
+        padding:
+          45px 30px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+      }
+
+      .footer-grid {
+        grid-template-columns:
+          1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =======================================================
+       HEADER
+  ======================================================== -->
+
+  <header class="site-header">
+
+    <div class="container header-inner">
+
+      <a
+        href="#home"
+        class="brand"
+        aria-label="Thread and Loom Home"
+      >
+
+        <span class="brand-logo">
+          TL
+        </span>
+
+        <span>
+          Thread & Loom
+        </span>
+
+      </a>
+
+      <button
+        class="mobile-menu-button"
+        id="mobileMenuButton"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+
+      <nav
+        class="main-navigation"
+        id="mainNavigation"
+        aria-label="Main navigation"
+      >
+
+        <a href="#home">
+          Home
+        </a>
+
+        <a href="#about">
+          About Us
+        </a>
+
+        <a href="#contacts">
+          Contacts
+        </a>
+
+        <a href="#store">
+          Store Page
+        </a>
+
+        <a
+          href="#dashboard"
+          id="dashboardLink"
+        >
+          Seller Dashboard
+        </a>
+
+        <button
+          class="button"
+          id="loginButton"
+          type="button"
+        >
+          Login
+        </button>
+
+      </nav>
+
+    </div>
+
+  </header>
+
+
+  <main>
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section
+      class="container hero"
+      id="home"
+    >
+
+      <div class="hero-content">
+
+        <p class="eyebrow">
+          FASHION • FABRIC • CRAFT
+        </p>
+
+        <h1 class="hero-title">
+          Find fabric for your
+          <span>next creation.</span>
+        </h1>
+
+        <p class="hero-description">
+          Discover fashion fabrics and sewing supplies
+          from independent sellers. Buy what inspires you,
+          or turn your own fabric collection into a business.
+        </p>
+
+        <div class="hero-actions">
+
+          <a
+            href="#store"
+            class="button"
+          >
+            Shop fabrics
+          </a>
+
+          <button
+            class="button button-outline"
+            id="sellButton"
+            type="button"
+          >
+            Start selling
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="hero-visual"
+        aria-label="Abstract fabric display"
+      >
+
+        <div
+          class="fabric fabric-one"
+        ></div>
+
+        <div
+          class="fabric fabric-two"
+        ></div>
+
+        <div
+          class="fabric fabric-three"
+        ></div>
+
+        <div class="hero-label">
+
+          <strong>
+            Curated textures
+          </strong>
+
+          Made for makers.
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FEATURES
+    ====================================================== -->
+
+    <section
+      class="section features-section"
+    >
+
+      <div class="container">
+
+        <p class="eyebrow">
+          WHY THREAD & LOOM
+        </p>
+
+        <h2 class="section-title">
+          Built around makers.
+        </h2>
+
+        <div class="features-grid">
+
+          <article class="feature-card">
+
+            <span class="feature-number">
+              01
+            </span>
+
+            <h3>
+              Discover
+            </h3>
+
+            <p>
+              Browse fabrics and sewing supplies
+              from different sellers in one marketplace.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <span class="feature-number">
+              02
+            </span>
+
+            <h3>
+              Sell
+            </h3>
+
+            <p>
+              Registered sellers can list their own
+              fashion fabrics and track their sales.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <span class="feature-number">
+              03
+            </span>
+
+            <h3>
+              Shop with confidence
+            </h3>
+
+            <p>
+              View product ratings and reviews before
+              making a purchase.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STORE
+    ====================================================== -->
+
+    <section
+      class="section"
+      id="store"
+    >
+
+      <div class="container">
+
+        <div class="store-header">
+
+          <div>
+
+            <p class="eyebrow">
+              THE STORE
+            </p>
+
+            <h2 class="section-title">
+              Explore fabrics.
+            </h2>
+
+            <p class="section-description">
+              Browse our marketplace categories and
+              discover materials for your next project.
+            </p>
+
+          </div>
+
+          <button
+            class="button button-outline"
+            id="refreshProducts"
+            type="button"
+          >
+            Refresh products
+          </button>
+
+        </div>
+
+
+        <div
+          class="category-list"
+          id="categoryList"
+        >
+
+          <button
+            class="category-button active"
+            type="button"
+          >
+            All
+          </button>
+
+          <button
+            class="category-button"
+            type="button"
+          >
+            Cotton
+          </button>
+
+          <button
+            class="category-button"
+            type="button"
+          >
+            Linen
+          </button>
+
+          <button
+            class="category-button"
+            type="button"
+          >
+            Silk
+          </button>
+
+          <button
+            class="category-button"
+            type="button"
+          >
+            Denim
+          </button>
+
+          <button
+            class="category-button"
+            type="button"
+          >
+            Sewing Supplies
+          </button>
+
+        </div>
+
+
+        <div
+          class="products-grid"
+          id="productsGrid"
+        >
+
+          <article class="product-card">
+
+            <div class="product-image">
+              COTTON
+            </div>
+
+            <div class="product-info">
+
+              <span class="product-category">
+                Cotton
+              </span>
+
+              <h3 class="product-name">
+                Premium Cotton Fabric
+              </h3>
+
+              <p class="product-price">
+                ₱250.00 / meter
+              </p>
+
+              <p class="product-rating">
+                ★★★★★
+              </p>
+
+              <div class="product-actions">
+
+                <button
+                  class="button"
+                  type="button"
+                  data-demo-action="buy"
+                >
+                  Buy
+                </button>
+
+                <button
+                  class="button button-outline"
+                  type="button"
+                  data-demo-action="review"
+                >
+                  Review
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <article class="product-card">
+
+            <div class="product-image">
+              LINEN
+            </div>
+
+            <div class="product-info">
+
+              <span class="product-category">
+                Linen
+              </span>
+
+              <h3 class="product-name">
+                Natural Linen Blend
+              </h3>
+
+              <p class="product-price">
+                ₱390.00 / meter
+              </p>
+
+              <p class="product-rating">
+                ★★★★☆
+              </p>
+
+              <div class="product-actions">
+
+                <button
+                  class="button"
+                  type="button"
+                  data-demo-action="buy"
+                >
+                  Buy
+                </button>
+
+                <button
+                  class="button button-outline"
+                  type="button"
+                  data-demo-action="review"
+                >
+                  Review
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <article class="product-card">
+
+            <div class="product-image">
+              SILK
+            </div>
+
+            <div class="product-info">
+
+              <span class="product-category">
+                Silk
+              </span>
+
+              <h3 class="product-name">
+                Smooth Silk Fabric
+              </h3>
+
+              <p class="product-price">
+                ₱650.00 / meter
+              </p>
+
+              <p class="product-rating">
+                ★★★★★
+              </p>
+
+              <div class="product-actions">
+
+                <button
+                  class="button"
+                  type="button"
+                  data-demo-action="buy"
+                >
+                  Buy
+                </button>
+
+                <button
+                  class="button button-outline"
+                  type="button"
+                  data-demo-action="review"
+                >
+                  Review
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <article class="product-card">
+
+            <div class="product-image">
+              DENIM
+            </div>
+
+            <div class="product-info">
+
+              <span class="product-category">
+                Denim
+              </span>
+
+              <h3 class="product-name">
+                Classic Denim
+              </h3>
+
+              <p class="product-price">
+                ₱420.00 / meter
+              </p>
+
+              <p class="product-rating">
+                ★★★★☆
+              </p>
+
+              <div class="product-actions">
+
+                <button
+                  class="button"
+                  type="button"
+                  data-demo-action="buy"
+                >
+                  Buy
+                </button>
+
+                <button
+                  class="button button-outline"
+                  type="button"
+                  data-demo-action="review"
+                >
+                  Review
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ABOUT
+    ====================================================== -->
+
+    <section
+      class="section about-section"
+      id="about"
+    >
+
+      <div class="container about-grid">
+
+        <div>
+
+          <p class="eyebrow">
+            ABOUT US
+          </p>
+
+          <h2 class="section-title">
+            One marketplace.
+            Endless possibilities.
+          </h2>
+
+        </div>
+
+
+        <div>
+
+          <p class="about-text">
+            Thread & Loom connects fabric buyers with
+            independent sellers. Our goal is to make
+            discovering, buying, and selling fashion
+            fabrics simple and accessible.
+          </p>
+
+          <div class="about-points">
+
+            <div class="about-point">
+              Quality-focused marketplace listings.
+            </div>
+
+            <div class="about-point">
+              Reviews and ratings from buyers.
+            </div>
+
+            <div class="about-point">
+              Seller tools for product and sales management.
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CTA
+    ====================================================== -->
+
+    <section class="cta-section">
+
+      <div class="container">
+
+        <div class="cta">
+
+          <div>
+
+            <h2>
+              Have fabric to sell?
+            </h2>
+
+            <p>
+              Create a seller account and turn your
+              fabrics and sewing supplies into listings.
+            </p>
+
+          </div>
+
+          <button
+            class="button button-light"
+            id="ctaSellButton"
+            type="button"
+          >
+            Become a seller
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTACTS
+    ====================================================== -->
+
+    <section
+      class="section"
+      id="contacts"
+    >
+
+      <div class="container contact-grid">
+
+        <div>
+
+          <p class="eyebrow">
+            CONTACTS
+          </p>
+
+          <h2 class="section-title">
+            We're here to help.
+          </h2>
+
+          <p class="section-description">
+            Have a question about an order, product,
+            seller account, or marketplace feature?
+            Contact the marketplace support team.
+          </p>
+
+        </div>
+
+
+        <div class="contact-card">
+
+          <div class="contact-item">
+
+            <strong>
+              Email
+            </strong>
+
+            <span>
+              support@threadandloom.example
+            </span>
+
+          </div>
+
+          <div class="contact-item">
+
+            <strong>
+              Marketplace
+            </strong>
+
+            <span>
+              Fashion Fabric Marketplace
+            </span>
+
+          </div>
+
+          <div class="contact-item">
+
+            <strong>
+              Support
+            </strong>
+
+            <span>
+              Buyer and seller assistance
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =======================================================
+       AUTH MODAL
+  ======================================================== -->
+
+  <div
+    class="modal"
+    id="authModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="authTitle"
+  >
+
+    <div class="modal-card">
+
+      <div class="modal-header">
+
+        <h2 id="authTitle">
+          Sign in
+        </h2>
+
+        <button
+          class="modal-close"
+          id="closeAuthModal"
+          type="button"
+          aria-label="Close"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form
+        class="auth-form"
+        id="authForm"
+      >
+
+        <label>
+          Full name
+
+          <input
+            id="authName"
+            name="full_name"
+            type="text"
+            autocomplete="name"
+            maxlength="120"
+            placeholder="Your full name"
+          >
+
+        </label>
+
+
+        <label>
+          Email
+
+          <input
+            id="authEmail"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            maxlength="254"
+            placeholder="you@example.com"
+          >
+
+        </label>
+
+
+        <label>
+          Password
+
+          <input
+            id="authPassword"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+            minlength="8"
+            placeholder="At least 8 characters"
+          >
+
+        </label>
+
+
+        <label id="roleField">
+          Account type
+
+          <select
+            id="authRole"
+            name="role"
+          >
+
+            <option value="buyer">
+              Buyer
+            </option>
+
+            <option value="seller">
+              Seller
+            </option>
+
+          </select>
+
+        </label>
+
+
+        <label id="gcashField">
+
+          GCash number
+
+          <input
+            id="authGcash"
+            name="gcash_number"
+            type="tel"
+            inputmode="tel"
+            maxlength="20"
+            placeholder="09XXXXXXXXX"
+          >
+
+        </label>
+
+
+        <button
+          class="button"
+          id="authSubmit"
+          type="submit"
+        >
+          Sign in
+        </button>
+
+
+        <p
+          class="form-message"
+          id="authMessage"
+          aria-live="polite"
+        ></p>
+
+
+        <button
+          type="button"
+          class="button button-outline"
+          id="authModeButton"
+        >
+          Create an account instead
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- =======================================================
+       AI CHATBOT
+  ======================================================== -->
+
+  <div class="chatbot">
+
+    <div
+      class="chat-window"
+      id="chatWindow"
+    >
+
+      <div class="chat-header">
+
+        <strong>
+          Thread & Loom AI
+        </strong>
+
+        <button
+          class="chat-close"
+          id="chatClose"
+          type="button"
+          aria-label="Close chatbot"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        class="chat-messages"
+        id="chatMessages"
+      >
+
+        <div class="message bot">
+          Hi! I'm the Thread & Loom assistant.
+          Ask me about products, sellers, or the marketplace.
+        </div>
+
+      </div>
+
+
+      <form
+        class="chat-form"
+        id="chatForm"
+      >
+
+        <input
+          name="message"
+          type="text"
+          maxlength="500"
+          placeholder="Ask something..."
+          required
+        >
+
+        <button
+          type="submit"
+        >
+          Send
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <button
+      class="chat-button"
+      id="chatButton"
+      type="button"
+      aria-label="Open AI chatbot"
+    >
+      AI
+    </button>
+
+  </div>
+
+
+  <!-- =======================================================
+       FOOTER + SITEMAP
+  ======================================================== -->
+
+  <footer class="site-footer">
+
+    <div class="container">
+
+      <div class="footer-grid">
+
+        <div class="footer-column">
+
+          <h3>
+            Thread & Loom
+          </h3>
+
+          <p>
+            A fashion fabric marketplace connecting
+            buyers and independent sellers.
+          </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+          <h3>
+            Sitemap
+          </h3>
+
+          <div class="footer-links">
+
+            <a href="#home">
+              Home
+            </a>
+
+            <a href="#about">
+              About Us
+            </a>
+
+            <a href="#store">
+              Store Page
+            </a>
+
+            <a href="#contacts">
+              Contacts
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <div class="footer-column">
+
+          <h3>
+            Accounts
+          </h3>
+
+          <div class="footer-links">
+
+            <a
+              href="#"
+              id="footerLogin"
+            >
+              Login
+            </a>
+
+            <a
+              href="#"
+              id="footerRegister"
+            >
+              Register
+            </a>
+
+            <a href="#dashboard">
+              Seller Dashboard
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <div class="footer-column">
+
+          <h3>
+            Marketplace
+          </h3>
+
+          <div class="footer-links">
+
+            <a href="#store">
+              Fabrics
+            </a>
+
+            <a href="#contacts">
+              Support
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="footer-bottom">
+
+        © 2026 Thread & Loom. All rights reserved.
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =======================================================
+       FRONTEND LOGIC
+       Backend connections will be added after this page
+       has been committed and visually checked.
+  ======================================================== -->
+
+  <script>
+
+    "use strict";
+
+
+    /* =======================================================
+       ELEMENTS
+    ======================================================== */
+
+    const mobileMenuButton =
+      document.getElementById(
+        "mobileMenuButton"
+      );
+
+    const mainNavigation =
+      document.getElementById(
+        "mainNavigation"
+      );
+
+    const loginButton =
+      document.getElementById(
+        "loginButton"
+      );
+
+    const authModal =
+      document.getElementById(
+        "authModal"
+      );
+
+    const closeAuthModal =
+      document.getElementById(
+        "closeAuthModal"
+      );
+
+    const authModeButton =
+      document.getElementById(
+        "authModeButton"
+      );
+
+    const authTitle =
+      document.getElementById(
+        "authTitle"
+      );
+
+    const authSubmit =
+      document.getElementById(
+        "authSubmit"
+      );
+
+    const authForm =
+      document.getElementById(
+        "authForm"
+      );
+
+    const authName =
+      document.getElementById(
+        "authName"
+      );
+
+    const roleField =
+      document.getElementById(
+        "roleField"
+      );
+
+    const gcashField =
+      document.getElementById(
+        "gcashField"
+      );
+
+    const authMessage =
+      document.getElementById(
+        "authMessage"
+      );
+
+    const sellButton =
+      document.getElementById(
+        "sellButton"
+      );
+
+    const ctaSellButton =
+      document.getElementById(
+        "ctaSellButton"
+      );
+
+    const chatButton =
+      document.getElementById(
+        "chatButton"
+      );
+
+    const chatWindow =
+      document.getElementById(
+        "chatWindow"
+      );
+
+    const chatClose =
+      document.getElementById(
+        "chatClose"
+      );
+
+    const chatForm =
+      document.getElementById(
+        "chatForm"
+      );
+
+    const chatMessages =
+      document.getElementById(
+        "chatMessages"
+      );
+
+
+    /* =======================================================
+       AUTH MODE
+    ======================================================== */
+
+    let registerMode = false;
+
+
+    function updateAuthMode() {
+
+      if (registerMode) {
+
+        authTitle.textContent =
+          "Create your account";
+
+        authSubmit.textContent =
+          "Create account";
+
+        authModeButton.textContent =
+          "I already have an account";
+
+        authName.parentElement.style.display =
+          "block";
+
+        roleField.style.display =
+          "block";
+
+        gcashField.style.display =
+          "block";
+
+      } else {
+
+        authTitle.textContent =
+          "Sign in";
+
+        authSubmit.textContent =
+          "Sign in";
+
+        authModeButton.textContent =
+          "Create an account instead";
+
+        authName.parentElement.style.display =
+          "none";
+
+        roleField.style.display =
+          "none";
+
+        gcashField.style.display =
+          "none";
+
+      }
+
+      authMessage.textContent = "";
+
+    }
+
+
+    function openAuthModal(
+      shouldRegister = false
+    ) {
+
+      registerMode =
+        shouldRegister;
+
+      updateAuthMode();
+
+      authModal.classList.add(
+        "open"
+      );
+
+      document.body.style.overflow =
+        "hidden";
+
+      document.getElementById(
+        "authEmail"
+      ).focus();
+
+    }
+
+
+    function closeModal() {
+
+      authModal.classList.remove(
+        "open"
+      );
+
+      document.body.style.overflow =
+        "";
+
+      authForm.reset();
+
+      registerMode =
+        false;
+
+      updateAuthMode();
+
+    }
+
+
+    /* =======================================================
+       MOBILE NAVIGATION
+    ======================================================== */
+
+    mobileMenuButton.addEventListener(
+      "click",
+      function () {
+
+        const isOpen =
+          mainNavigation.classList.toggle(
+            "open"
+          );
+
+        mobileMenuButton.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+
+      }
+    );
+
+
+    document
+      .querySelectorAll(
+        ".main-navigation a"
+      )
+      .forEach(
+        function (link) {
+
+          link.addEventListener(
+            "click",
+            function () {
+
+              mainNavigation.classList.remove(
+                "open"
+              );
+
+              mobileMenuButton.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* =======================================================
+       AUTH EVENTS
+    ======================================================== */
+
+    loginButton.addEventListener(
+      "click",
+      function () {
+
+        openAuthModal(false);
+
+      }
+    );
+
+
+    closeAuthModal.addEventListener(
+      "click",
+      closeModal
+    );
+
+
+    authModeButton.addEventListener(
+      "click",
+      function () {
+
+        registerMode =
+          !registerMode;
+
+        updateAuthMode();
+
+      }
+    );
+
+
+    authModal.addEventListener(
+      "click",
+      function (event) {
+
+        if (
+          event.target ===
+          authModal
+        ) {
+
+          closeModal();
+
+        }
+
+      }
+    );
+
+
+    document.addEventListener(
+      "keydown",
+      function (event) {
+
+        if (
+          event.key === "Escape" &&
+          authModal.classList.contains(
+            "open"
+          )
+        ) {
+
+          closeModal();
+
+        }
+
+      }
+    );
+
+
+    /* =======================================================
+       AUTH FORM
+       Backend will replace this demo behavior after
+       Supabase integration.
+    ======================================================== */
+
+    authForm.addEventListener(
+      "submit",
+      function (event) {
+
+        event.preventDefault();
+
+        if (registerMode) {
+
+          authMessage.textContent =
+            "Registration will be connected to Supabase in the next step.";
+
+        } else {
+
+          authMessage.textContent =
+            "Login will be connected to Supabase in the next step.";
+
+        }
+
+      }
+    );
+
+
+    /* =======================================================
+       SELLER BUTTONS
+    ======================================================== */
+
+    function startSelling() {
+
+      openAuthModal(true);
+
+      document.getElementById(
+        "authRole"
+      ).value = "seller";
+
+    }
+
+
+    sellButton.addEventListener(
+      "click",
+      startSelling
+    );
+
+
+    ctaSellButton.addEventListener(
+      "click",
+      startSelling
+    );
+
+
+    /* =======================================================
+       CATEGORY BUTTONS
+    ======================================================== */
+
+    document
+      .querySelectorAll(
+        ".category-button"
+      )
+      .forEach(
+        function (button) {
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              document
+                .querySelectorAll(
+                  ".category-button"
+                )
+                .forEach(
+                  function (item) {
+
+                    item.classList.remove(
+                      "active"
+                    );
+
+                  }
+                );
+
+              button.classList.add(
+                "active"
+              );
+
+            }
+          );
+
+        }
+      );
+
+
+    /* =======================================================
+       DEMO PRODUCT BUTTONS
+       These will be replaced with the real API.
+    ======================================================== */
+
+    document
+      .querySelectorAll(
+        "[data-demo-action]"
+      )
+      .forEach(
+        function (button) {
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              const action =
+                button.dataset.demoAction;
+
+              if (
+                action === "buy"
+              ) {
+
+                openAuthModal(false);
+
+                authMessage.textContent =
+                  "Please sign in before purchasing.";
+
+              }
+
+              if (
+                action === "review"
+              ) {
+
+                openAuthModal(false);
+
+                authMessage.textContent =
+                  "Please sign in before submitting a review.";
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+
+    /* =======================================================
+       REFRESH
+    ======================================================== */
+
+    document
+      .getElementById(
+        "refreshProducts"
+      )
+      .addEventListener(
+        "click",
+        function () {
+
+          window.location.reload();
+
+        }
+      );
+
+
+    /* =======================================================
+       CHATBOT UI
+       Voiceflow backend connection comes later.
+    ======================================================== */
+
+    chatButton.addEventListener(
+      "click",
+      function () {
+
+        chatWindow.classList.toggle(
+          "open"
+        );
+
+      }
+    );
+
+
+    chatClose.addEventListener(
+      "click",
+      function () {
+
+        chatWindow.classList.remove(
+          "open"
+        );
+
+      }
+    );
+
+
+    function addChatMessage(
+      text,
+      type
+    ) {
+
+      const message =
+        document.createElement(
+          "div"
+        );
+
+      message.className =
+        "message " + type;
+
+      message.textContent =
+        text;
+
+      chatMessages.appendChild(
+        message
+      );
+
+      chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+    }
+
+
+    chatForm.addEventListener(
+      "submit",
+      function (event) {
+
+        event.preventDefault();
+
+        const input =
+          chatForm.elements.message;
+
+        const message =
+          input.value.trim();
+
+        if (!message) {
+          return;
+        }
+
+        addChatMessage(
+          message,
+          "user"
+        );
+
+        input.value = "";
+
+        /*
+          The real Voiceflow API connection will be
+          implemented through the secure Cloudflare
+          backend later.
+
+          We intentionally do NOT put a private
+          Voiceflow API key in this HTML file.
+        */
+
+        setTimeout(
+          function () {
+
+            addChatMessage(
+              "The AI assistant will be connected to Voiceflow in the backend setup.",
+              "bot"
+            );
+
+          },
+          400
+        );
+
+      }
+    );
+
+
+    /* =======================================================
+       FOOTER AUTH LINKS
+    ======================================================== */
+
+    document
+      .getElementById(
+        "footerLogin"
+      )
+      .addEventListener(
+        "click",
+        function (event) {
+
+          event.preventDefault();
+
+          openAuthModal(false);
+
+        }
+      );
+
+
+    document
+      .getElementById(
+        "footerRegister"
+      )
+      .addEventListener(
+        "click",
+        function (event) {
+
+          event.preventDefault();
+
+          openAuthModal(true);
+
+        }
+      );
+
+
+    /* =======================================================
+       INITIAL STATE
+    ======================================================== */
+
+    updateAuthMode();
+
+  </script>
+
+</body>
+</html>
