@@ -1,0 +1,14 @@
+{
+  "name": "fashion-fabric-marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fashion Fabric Marketplace",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler types"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
