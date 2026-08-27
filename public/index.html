@@ -1880,6 +1880,10 @@
       */
       API_BASE_URL: ""
     };
+    const supabaseClient = window.supabase.createClient(
+  APP_CONFIG.SUPABASE_URL,
+  APP_CONFIG.SUPABASE_ANON_KEY
+);
     /* =======================================================
        ELEMENTS
     ======================================================== */
@@ -2213,12 +2217,7 @@
     setMessage(authMessage, "Supabase is not configured.", "error");
     return;
   }
-
-  const supabaseClient = window.supabase.createClient(
-    APP_CONFIG.SUPABASE_URL,
-    APP_CONFIG.SUPABASE_ANON_KEY
-  );
-
+      
   setMessage(authMessage, "Connecting...");
 
   try {
