@@ -2757,8 +2757,70 @@
        INITIAL STATE
     ======================================================== */
     updateAuthMode();
+
+filterProducts();
+
+async function initializeAuth() {
+
+  const { data, error } =
+
+    await supabaseClient.auth.getSession();
+
+  if (error) {
+
+    console.error(
+
+      "Could not restore Supabase session:",
+
+      error
+
+    );
+
+    return;
+
+  }
+
+  currentUser = data.session?.user || null;
+
+  currentUserRole =
+
+    currentUser?.user_metadata?.role || null;
+
+  showSellerDashboard();
+
+  if (currentUser) {
+
+    loginButtonText.textContent = "Account";
+
+  } else {
+
+    loginButtonText.textContent = "Login";
+
+  }
+
+}
+
+initializeAuth();
+
+supabaseClient.auth.onAuthStateChange(
+
+  function (event, session) {
+
+    currentUser = session?.user || null;
+
+    currentUserRole =
+
+      currentUser?.user_metadata?.role || null;
+
     showSellerDashboard();
-    filterProducts();
+
+    loginButtonText.textContent =
+
+      currentUser ? "Account" : "Login";
+
+  }
+
+);
     /*
       =========================================================
       CURRENT ARCHITECTURE
