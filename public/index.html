@@ -2572,11 +2572,12 @@
             await supabaseClient
               .from("products")
               .insert({
-                seller_id: currentUser.id,
-                name: name,
-                description: description,
-                price: price
-              });
+  seller_id: currentUser.id,
+  name: name,
+  slug: name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-"),
+  description: description,
+  price: price
+});
 
           if (error) {
             throw error;
