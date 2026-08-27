@@ -2515,33 +2515,30 @@
         }
       }
     );
-    productForm.addEventListener(
+        productForm.addEventListener(
       "submit",
       async function (event) {
         event.preventDefault();
-        const name =
-          document
-            .getElementById("productName")
-            .value
-            .trim();
-        const category =
-          document
-            .getElementById("productCategory")
-            .value;
-        const price =
-          document
-            .getElementById("productPrice")
-            .value;
-        const description =
-          document
-            .getElementById("productDescription")
-            .value
-            .trim();
-        if (
-          !name ||
-          !category ||
-          !price
-        ) {
+
+        const name = document
+          .getElementById("productName")
+          .value
+          .trim();
+
+        const category = document
+          .getElementById("productCategory")
+          .value;
+
+        const price = Number(
+          document.getElementById("productPrice").value
+        );
+
+        const description = document
+          .getElementById("productDescription")
+          .value
+          .trim();
+
+        if (!name || !category || !price) {
           setMessage(
             productMessage,
             "Please complete the required fields.",
@@ -2549,25 +2546,60 @@
           );
           return;
         }
-        /*
-          Future Supabase operation:
-          INSERT INTO products
-          (
-            seller_id,
-            category_id,
-            name,
-            description,
-            price
-          )
-          The authenticated user's ID should be
-          obtained from the Supabase session.
-        */
+
+        if (!currentUser) {
+          setMessage(
+            productMessage,
+            "Please sign in first.",
+            "error"
+          );
+          return;
+        }
+
+        const supabaseClient =
+          window.supabase.createClient(
+            APP_CONFIG.SUPABASE_URL,
+            APP_CONFIG.SUPABASE_ANON_KEY
+          );
+
         setMessage(
           productMessage,
-          "Product listing is ready for the Supabase database connection.",
-          "success"
+          "Saving product..."
         );
-        productForm.reset();
+
+        try {
+          const { error } =
+            await supabaseClient
+              .from("products")
+              .insert({
+                seller_id: currentUser.id,
+                name: name,
+                description: description,
+                price: price
+              });
+
+          if (error) {
+            throw error;
+          }
+
+          setMessage(
+            productMessage,
+            "Product created successfully!",
+            "success"
+          );
+
+          productForm.reset();
+
+        } catch (error) {
+          console.error(error);
+
+          setMessage(
+            productMessage,
+            error.message ||
+              "Could not save product.",
+            "error"
+          );
+        }
       }
     );
     document
