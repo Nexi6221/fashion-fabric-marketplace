@@ -2201,85 +2201,77 @@
        behavior without putting private credentials
        inside this HTML file.
     ======================================================== */
-    authForm.addEventListener(
-      "submit",
-      async function (event) {
-        event.preventDefault();
-        const email =
-          document
-            .getElementById("authEmail")
-            .value
-            .trim();
-        const password =
-          document
-            .getElementById("authPassword")
-            .value;
-        if (!email || !password) {
-          return;
+    authForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const email = document.getElementById("authEmail").value.trim();
+  const password = document.getElementById("authPassword").value;
+
+  if (!email || !password) return;
+
+  if (!APP_CONFIG.SUPABASE_URL || !APP_CONFIG.SUPABASE_ANON_KEY) {
+    setMessage(authMessage, "Supabase is not configured.", "error");
+    return;
+  }
+
+  const supabaseClient = window.supabase.createClient(
+    APP_CONFIG.SUPABASE_URL,
+    APP_CONFIG.SUPABASE_ANON_KEY
+  );
+
+  setMessage(authMessage, "Connecting...");
+
+  try {
+    let result;
+
+    if (registerMode) {
+      result = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            full_name: authName.value.trim(),
+            role: authRole.value,
+            gcash_number: authGcash.value.trim()
+          }
         }
-        if (!APP_CONFIG.SUPABASE_URL) {
-          setMessage(
-            authMessage,
-            registerMode
-              ? "Registration is ready for the Supabase connection."
-              : "Login is ready for the Supabase connection."
-          );
-          return;
-        }
-        /*
-          REAL SUPABASE AUTHENTICATION
-          will be connected here.
-          The browser should use the public
-          Supabase client configuration only.
-          Server-only credentials must never
-          be placed in this file.
-        */
-        setMessage(
-          authMessage,
-          "Connecting to the account system..."
-        );
-        try {
-          /*
-            Example future flow:
-            const { data, error } =
-              await supabase.auth.signInWithPassword({
-                email,
-                password
-              });
-            or:
-            const { data, error } =
-              await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                  data: {
-                    full_name,
-                    role,
-                    gcash_number
-                  }
-                }
-              });
-          */
-          await new Promise(
-            function (resolve) {
-              setTimeout(resolve, 500);
-            }
-          );
-          setMessage(
-            authMessage,
-            "Authentication connection is ready for the Supabase client.",
-            "success"
-          );
-        } catch (error) {
-          console.error(error);
-          setMessage(
-            authMessage,
-            "Something went wrong. Please try again.",
-            "error"
-          );
-        }
-      }
+      });
+    } else {
+      result = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+    }
+
+    if (result.error) throw result.error;
+
+    currentUser = result.data.user;
+    currentUserRole =
+      result.data.user?.user_metadata?.role || "buyer";
+
+    setMessage(
+      authMessage,
+      registerMode
+        ? "Account created successfully!"
+        : "Login successful!",
+      "success"
     );
+
+    showSellerDashboard();
+
+    setTimeout(function () {
+      closeAuth();
+    }, 1000);
+
+  } catch (error) {
+    console.error(error);
+    setMessage(
+      authMessage,
+      error.message || "Authentication failed.",
+      "error"
+    );
+  }
+});
     /* =======================================================
        SELLER BUTTONS
     ======================================================== */
