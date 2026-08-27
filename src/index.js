@@ -65,8 +65,43 @@ async function handleApi(request, env) {
     return json({
       ok: true,
       databaseConfigured: Boolean(env.SUPABASE_URL),
-      paymentsConfigured: Boolean(env.PAYMONGO_SECRET_KEY),
-      chatbotConfigured: Boolean(env.VOICEFLOW_API_KEY)
+      publishableKeyConfigured: Boolean(
+        env.SUPABASE_PUBLISHABLE_KEY
+      )
+    });
+  }
+
+  if (
+    request.method === "GET" &&
+    url.pathname === "/api/products"
+  ) {
+    const response = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/products?select=*`,
+      {
+        headers: {
+          "apikey": env.SUPABASE_PUBLISHABLE_KEY,
+          "Authorization":
+            `Bearer ${env.SUPABASE_PUBLISHABLE_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      return json(
+        {
+          ok: false,
+          error: "Unable to load products from Supabase."
+        },
+        response.status
+      );
+    }
+
+    const products = await response.json();
+
+    return json({
+      ok: true,
+      products
     });
   }
 
