@@ -2516,98 +2516,106 @@
       }
     );
         productForm.addEventListener(
-      "submit",
-      async function (event) {
-        event.preventDefault();
-
-        const name = document
-          .getElementById("productName")
-          .value
-          .trim();
-
-        const category = document
-          .getElementById("productCategory")
-          .value;
-
-        const price = Number(
-          document.getElementById("productPrice").value
-        );
-
-        const description = document
-          .getElementById("productDescription")
-          .value
-          .trim();
-
-        if (!name || !category || !price) {
-          setMessage(
-            productMessage,
-            "Please complete the required fields.",
-            "error"
-          );
-          return;
-        }
-
-        if (!currentUser) {
-          setMessage(
-            productMessage,
-            "Please sign in first.",
-            "error"
-          );
-          return;
-        }
-
-        const supabaseClient =
-          window.supabase.createClient(
-            APP_CONFIG.SUPABASE_URL,
-            APP_CONFIG.SUPABASE_ANON_KEY
-          );
-
-        setMessage(
-          productMessage,
-          "Saving product..."
-        );
-
-        try {
-          const { error } =
-            await supabaseClient
-              .from("products")
-              .insert({
-  seller_id: currentUser.id,
-  name: name,
-  slug: name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-"),
-  description: description,
-  category: category,
-  price: price
-});
-
-          if (error) {
-            throw error;
-          }
-
-          setMessage(
-            productMessage,
-            "Product created successfully!",
-            "success"
-          );
-
-          productForm.reset();
-
-        } catch (error) {
-          console.error(error);
-
-          setMessage(
-            productMessage,
-            error.message ||
-              "Could not save product.",
-            "error"
-          );
-        }
-      }
+  "submit",
+  async function (event) {
+    event.preventDefault();
+    const name = document
+      .getElementById("productName")
+      .value
+      .trim();
+    const categorySlug = document
+      .getElementById("productCategory")
+      .value;
+    const price = Number(
+      document.getElementById("productPrice").value
     );
-    async function loadProducts() {
+    const description = document
+      .getElementById("productDescription")
+      .value
+      .trim();
+    if (!name || !categorySlug || price <= 0) {
+      setMessage(
+        productMessage,
+        "Please complete the required fields.",
+        "error"
+      );
+      return;
+    }
+    if (!currentUser) {
+      setMessage(
+        productMessage,
+        "Please sign in first.",
+        "error"
+      );
+      return;
+    }
+    setMessage(
+      productMessage,
+      "Saving product..."
+    );
+    try {
+      // Find the category ID
+      const { data: category, error: categoryError } =
+        await supabaseClient
+          .from("categories")
+          .select("id")
+          .eq("slug", categorySlug)
+          .single();
+      if (categoryError) {
+        throw categoryError;
+      }
+      // Save the product
+      const { error: productError } =
+        await supabaseClient
+          .from("products")
+          .insert({
+            seller_id: currentUser.id,
+            category_id: category.id,
+            name: name,
+            slug: name
+              .toLowerCase()
+              .trim()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, ""),
+            description: description,
+            price: price,
+            stock: 0,
+            unit: "meter",
+            status: "active",
+            average_rating: 0,
+            review_count: 0
+          });
+      if (productError) {
+        throw productError;
+      }
+      setMessage(
+        productMessage,
+        "Product created successfully!",
+        "success"
+      );
+      productForm.reset();
+      await loadProducts();
+    } catch (error) {
+      console.error(error);
+      setMessage(
+        productMessage,
+        error.message || "Could not save product.",
+        "error"
+      );
+    }
+  }
+);
+async function loadProducts() {
   const { data, error } = await supabaseClient
     .from("products")
-    .select("*")
+    .select(`
+      *,
+      categories (
+        id,
+        name,
+        slug
+      )
+    `)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -2620,21 +2628,43 @@
 
   productsGrid.innerHTML = "";
 
+  if (!data || data.length === 0) {
+    productsGrid.innerHTML = `
+      <p style="
+        grid-column: 1 / -1;
+        text-align: center;
+        color: var(--muted);
+        padding: 40px;
+      ">
+        No products available yet.
+      </p>
+    `;
+    return;
+  }
+
   data.forEach(function (product) {
     const card = document.createElement("article");
 
+    const categoryName =
+      product.categories?.name || "Fabric";
+
+    const categorySlug =
+      product.categories?.slug || "all";
+
     card.className = "product-card";
+
     card.dataset.productCategory =
-      product.category || "all";
+      categorySlug;
 
     card.innerHTML = `
       <div class="product-image">
-        ${product.category || "FABRIC"}
+        ${categoryName}
       </div>
 
       <div class="product-info">
+
         <span class="product-category">
-          ${product.category || "Fabric"}
+          ${categoryName}
         </span>
 
         <h3 class="product-name">
@@ -2643,13 +2673,33 @@
 
         <p class="product-price">
           ₱${Number(product.price).toFixed(2)}
+          ${product.unit ? " / " + product.unit : ""}
+        </p>
+
+        <p class="product-rating">
+          ★★★★★
         </p>
 
         <div class="product-actions">
-          <button class="button" type="button">
+
+          <button
+            class="button"
+            type="button"
+            data-product-id="${product.id}"
+          >
             Buy
           </button>
+
+          <button
+            class="button button-outline"
+            type="button"
+            data-product-id="${product.id}"
+          >
+            Review
+          </button>
+
         </div>
+
       </div>
     `;
 
@@ -2658,8 +2708,6 @@
 
   filterProducts();
 }
-
-loadProducts();
     
     document
       .getElementById(
@@ -2891,6 +2939,7 @@ async function initializeAuth() {
 }
 
 initializeAuth();
+loadProducts();
 
 supabaseClient.auth.onAuthStateChange(
 
