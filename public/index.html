@@ -2571,15 +2571,21 @@
     );
     try {
       // Find the category ID
-      const { data: category, error: categoryError } =
+const { data: category, error: categoryError } =
   await supabaseClient
     .from("categories")
-    .select("id")
+    .select("id, name, slug")
     .eq("slug", categorySlug)
     .maybeSingle();
 
 if (categoryError) {
   throw categoryError;
+}
+
+if (!category) {
+  throw new Error(
+    `Category "${categorySlug}" was not found.`
+  );
 }
 
 if (!category) {
