@@ -2572,14 +2572,21 @@
     try {
       // Find the category ID
       const { data: category, error: categoryError } =
-        await supabaseClient
-          .from("categories")
-          .select("id")
-          .eq("slug", categorySlug)
-          .single();
-      if (categoryError) {
-        throw categoryError;
-      }
+  await supabaseClient
+    .from("categories")
+    .select("id")
+    .eq("slug", categorySlug)
+    .maybeSingle();
+
+if (categoryError) {
+  throw categoryError;
+}
+
+if (!category) {
+  throw new Error(
+    `Category "${categorySlug}" was not found.`
+  );
+}
       // Save the product
       const { error: productError } =
         await supabaseClient
