@@ -2631,6 +2631,7 @@ if (!category) {
       );
       productForm.reset();
       await loadProducts();
+      await loadSellerProductCount();
     } catch (error) {
       console.error(error);
       setMessage(
