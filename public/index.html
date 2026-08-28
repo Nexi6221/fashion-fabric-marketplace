@@ -2576,6 +2576,7 @@
   name: name,
   slug: name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-"),
   description: description,
+  category: category,
   price: price
 });
 
@@ -2603,6 +2604,63 @@
         }
       }
     );
+    async function loadProducts() {
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Could not load products:", error);
+    return;
+  }
+
+  const productsGrid =
+    document.getElementById("productsGrid");
+
+  productsGrid.innerHTML = "";
+
+  data.forEach(function (product) {
+    const card = document.createElement("article");
+
+    card.className = "product-card";
+    card.dataset.productCategory =
+      product.category || "all";
+
+    card.innerHTML = `
+      <div class="product-image">
+        ${product.category || "FABRIC"}
+      </div>
+
+      <div class="product-info">
+        <span class="product-category">
+          ${product.category || "Fabric"}
+        </span>
+
+        <h3 class="product-name">
+          ${product.name}
+        </h3>
+
+        <p class="product-price">
+          ₱${Number(product.price).toFixed(2)}
+        </p>
+
+        <div class="product-actions">
+          <button class="button" type="button">
+            Buy
+          </button>
+        </div>
+      </div>
+    `;
+
+    productsGrid.appendChild(card);
+  });
+
+  filterProducts();
+}
+
+loadProducts();
+    
     document
       .getElementById(
         "salesHistoryButton"
