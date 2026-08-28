@@ -2476,24 +2476,31 @@
         }
       }
     );
-    logoutButton.addEventListener(
-      "click",
-      function () {
-        currentUser = null;
-        currentUserRole = null;
-        dashboardSection.classList.add(
-          "hidden"
-        );
-        dashboardLink.classList.add(
-          "hidden"
-        );
-        loginButtonText.textContent =
-          "Login";
-        alert(
-          "You have been logged out."
-        );
-      }
+logoutButton.addEventListener(
+  "click",
+  async function () {
+    const { error } =
+      await supabaseClient.auth.signOut();
+    if (error) {
+      console.error("Logout failed:", error);
+      alert("Could not log out.");
+      return;
+    }
+    currentUser = null;
+    currentUserRole = null;
+    dashboardSection.classList.add(
+      "hidden"
     );
+    dashboardLink.classList.add(
+      "hidden"
+    );
+    loginButtonText.textContent =
+      "Login";
+    alert(
+      "You have been logged out."
+    );
+  }
+);
     /* =======================================================
        ADD PRODUCT
     ======================================================== */
@@ -2735,13 +2742,38 @@ async function loadProducts() {
     productsGrid.appendChild(card);
   });
 
-  filterProducts();
+    filterProducts();
 }
-    
-    document
-      .getElementById(
-        "salesHistoryButton"
-      )
+
+
+async function loadSellerProductCount() {
+  if (!currentUser || currentUserRole !== "seller") {
+    document.getElementById("dashboardProducts").textContent = "0";
+    return;
+  }
+
+  const { count, error } = await supabaseClient
+    .from("products")
+    .select("id", {
+      count: "exact",
+      head: true
+    })
+    .eq("seller_id", currentUser.id);
+
+  if (error) {
+    console.error("Could not load seller product count:", error);
+    return;
+  }
+
+  document.getElementById("dashboardProducts").textContent =
+    String(count ?? 0);
+}
+
+
+document
+  .getElementById(
+    "salesHistoryButton"
+  )
       .addEventListener(
         "click",
         function () {
@@ -2969,6 +3001,7 @@ async function initializeAuth() {
 
 initializeAuth();
 loadProducts();
+loadSellerProductCount();
 
 supabaseClient.auth.onAuthStateChange(
 
