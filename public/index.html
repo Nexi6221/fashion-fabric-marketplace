@@ -2570,30 +2570,30 @@
       "Saving product..."
     );
     try {
-      // Find the category ID
-const { data: category, error: categoryError } =
+// Find the category ID
+const { data: categories, error: categoryError } =
   await supabaseClient
     .from("categories")
-    .select("id, name, slug")
-    .eq("slug", categorySlug)
-    .maybeSingle();
+    .select("id, name, slug");
 
 if (categoryError) {
   throw categoryError;
 }
 
-if (!category) {
-  throw new Error(
-    `Category "${categorySlug}" was not found.`
+const category = categories?.find(function (item) {
+  return (
+    String(item.slug).trim().toLowerCase() ===
+    String(categorySlug).trim().toLowerCase()
   );
-}
+});
 
 if (!category) {
   throw new Error(
-    `Category "${categorySlug}" was not found.`
+    `Category "${categorySlug}" was not found in the categories table.`
   );
 }
-      // Save the product
+
+// Save the product
       const { error: productError } =
         await supabaseClient
           .from("products")
