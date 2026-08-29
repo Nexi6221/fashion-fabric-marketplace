@@ -2842,8 +2842,7 @@ alert("Review submitted successfully!");
 document.addEventListener("click", async function (event) {
   const buyButton = event.target.closest(".buy-product-button");
 
-if (!buyButton) return;
-
+  if (!buyButton) return;
 
   if (!currentUser) {
     openAuthModal(false);
@@ -2856,46 +2855,7 @@ if (!buyButton) return;
 
   const productId = buyButton.dataset.productId;
 
-  const checkoutModal =
-    document.getElementById("checkoutModal");
-
-  if (!checkoutModal) {
-    alert("Checkout form is missing.");
-    console.error("checkoutModal was not found.");
-    return;
-  }
-
-  const productName =
-    document.getElementById("checkoutProductName");
-
-  const productPrice =
-    document.getElementById("checkoutProductPrice");
-
-  if (!productName || !productPrice) {
-    alert("Checkout form is incomplete.");
-    return;
-  }
-
-  const { data: product, error } =
-    await supabaseClient
-      .from("products")
-      .select("id, name, price")
-      .eq("id", productId)
-      .single();
-
-  if (error || !product) {
-    console.error("Could not load product:", error);
-    alert("Could not load this product.");
-    return;
-  }
-
-  productName.textContent = product.name;
-
-  productPrice.textContent =
-    "Price: ₱" +
-    Number(product.price).toFixed(2);
-
-  checkoutModal.style.display = "block";
+  alert("BUY CLICK DETECTED: " + productId);
 });
 async function loadSellerProductCount() {
   if (!currentUser || currentUserRole !== "seller") {
