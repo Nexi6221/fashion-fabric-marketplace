@@ -84,18 +84,16 @@ async function handleApi(request, env) {
     url.pathname === "/api/status"
   ) {
     return json({
-      ok: true,
-      databaseConfigured: Boolean(env.SUPABASE_URL),
-      publishableKeyConfigured: Boolean(
-        env.SUPABASE_PUBLISHABLE_KEY
-      ),
-      payMongoConfigured: Boolean(
-        env.PAYMONGO_SECRET_KEY
-      ),
-      geminiConfigured: Boolean(
-        env.GEMINI_API_KEY
-      )
-    });
+  ok: true,
+  databaseConfigured: Boolean(env.SUPABASE_URL),
+  publishableKeyConfigured: Boolean(
+    env.SUPABASE_PUBLISHABLE_KEY
+  ),
+  payMongoConfigured: Boolean(
+    env.PAYMONGO_SECRET_KEY
+  ),
+  geminiConfigured: Boolean(env.GEMINI_API_KEY)
+});
   }
 
   // GET PRODUCTS
