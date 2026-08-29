@@ -2841,7 +2841,7 @@ alert("Review submitted successfully!");
 }
 document.addEventListener("click", async function (event) {
   const buyButton = event.target.closest(".buy-product-button");
-
+  alert("BUY CLICK DETECTED");
   if (!buyButton) return;
 
   if (!currentUser) {
