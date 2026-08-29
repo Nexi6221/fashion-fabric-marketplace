@@ -2775,10 +2775,28 @@ if (reviewButton) {
 
     if (comment === null) return;
 
-    alert(
-      "Review button is working! Product ID: " +
-      productId
-    );
+    const { error: reviewError } =
+  await supabaseClient
+    .from("reviews")
+    .insert({
+      product_id: productId,
+      buyer_id: currentUser.id,
+      rating: ratingNumber,
+      comment: comment.trim()
+    });
+
+if (reviewError) {
+  console.error("Could not save review:", reviewError);
+  alert(
+    "Could not save your review: " +
+    reviewError.message
+  );
+  return;
+}
+
+alert("Review submitted successfully!");
+
+await loadProducts();
   });
 }
   });
