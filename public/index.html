@@ -2720,7 +2720,7 @@ async function loadProducts() {
         <div class="product-actions">
 
           <button
-            class="button"
+            class="button buy-product-button"
             type="button"
             data-product-id="${product.id}"
           >
@@ -2839,7 +2839,24 @@ alert("Review submitted successfully!");
 
   filterProducts();
 }
+document.addEventListener("click", async function (event) {
+  const buyButton = event.target.closest(".buy-product-button");
 
+  if (!buyButton) return;
+
+  if (!currentUser) {
+    openAuthModal(false);
+    setMessage(
+      authMessage,
+      "Please sign in before buying a product."
+    );
+    return;
+  }
+
+  const productId = buyButton.dataset.productId;
+
+  alert("Buy button is working! Product ID: " + productId);
+});
 
 async function loadSellerProductCount() {
   if (!currentUser || currentUserRole !== "seller") {
