@@ -2855,15 +2855,7 @@ document.addEventListener("click", async function (event) {
 
   const productId = buyButton.dataset.productId;
 
-  const checkoutModal =
-    document.getElementById("checkoutModal");
-
-  if (!checkoutModal) {
-    alert("CHECKOUT MODAL NOT FOUND");
-    return;
-  }
-
-  checkoutModal.style.display = "block";
+  alert("Buy button is working! Product ID: " + productId);
 });
 async function loadSellerProductCount() {
   if (!currentUser || currentUserRole !== "seller") {
@@ -3207,9 +3199,7 @@ supabaseClient.auth.onAuthStateChange(
       Cancel
     </button>
 
-    <p id="checkoutMessage"></p>
-  </div>
-</div>
+ 
 
 </body>
 </html>
