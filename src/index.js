@@ -34,17 +34,13 @@ function corsHeaders(origin, env) {
 function isAllowedOrigin(request, env) {
   const origin = request.headers.get("Origin");
   const requestUrl = new URL(request.url);
-
   if (origin === requestUrl.origin) {
     return true;
   }
-
   const allowedOrigin = env.ALLOWED_ORIGIN;
-
   if (!allowedOrigin) {
     return false;
   }
-
   return origin === allowedOrigin;
 }
 function supabaseHeaders(env, extra = {}) {
@@ -57,19 +53,30 @@ function supabaseHeaders(env, extra = {}) {
 }
 async function handleApi(request, env) {
   const url = new URL(request.url);
-  if (request.method === "GET" && url.pathname === "/api/health") {
+  // HEALTH
+  if (
+    request.method === "GET" &&
+    url.pathname === "/api/health"
+  ) {
     return json({
       ok: true,
       service: "fashion-fabric-marketplace",
       environment: env.ENVIRONMENT || "production"
     });
   }
-  if (request.method === "GET" && url.pathname === "/api/status") {
+  // STATUS
+  if (
+    request.method === "GET" &&
+    url.pathname === "/api/status"
+  ) {
     return json({
       ok: true,
       databaseConfigured: Boolean(env.SUPABASE_URL),
       publishableKeyConfigured: Boolean(
         env.SUPABASE_PUBLISHABLE_KEY
+      ),
+      payMongoConfigured: Boolean(
+        env.PAYMONGO_SECRET_KEY
       )
     });
   }
@@ -78,7 +85,10 @@ async function handleApi(request, env) {
     request.method === "GET" &&
     url.pathname === "/api/products"
   ) {
-    if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
+    if (
+      !env.SUPABASE_URL ||
+      !env.SUPABASE_PUBLISHABLE_KEY
+    ) {
       return json(
         {
           ok: false,
@@ -95,7 +105,10 @@ async function handleApi(request, env) {
     );
     const text = await response.text();
     if (!response.ok) {
-      console.error("Supabase GET products error:", text);
+      console.error(
+        "Supabase GET products error:",
+        text
+      );
       return json(
         {
           ok: false,
@@ -119,7 +132,9 @@ async function handleApi(request, env) {
     }
     return json({
       ok: true,
-      products: Array.isArray(products) ? products : []
+      products: Array.isArray(products)
+        ? products
+        : []
     });
   }
   // CREATE PRODUCT
@@ -127,7 +142,10 @@ async function handleApi(request, env) {
     request.method === "POST" &&
     url.pathname === "/api/products"
   ) {
-    if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
+    if (
+      !env.SUPABASE_URL ||
+      !env.SUPABASE_PUBLISHABLE_KEY
+    ) {
       return json(
         {
           ok: false,
@@ -167,7 +185,10 @@ async function handleApi(request, env) {
         400
       );
     }
-    if (!Number.isFinite(product.price) || product.price < 0) {
+    if (
+      !Number.isFinite(product.price) ||
+      product.price < 0
+    ) {
       return json(
         {
           ok: false,
@@ -176,7 +197,10 @@ async function handleApi(request, env) {
         400
       );
     }
-    if (!Number.isFinite(product.stock) || product.stock < 0) {
+    if (
+      !Number.isFinite(product.stock) ||
+      product.stock < 0
+    ) {
       return json(
         {
           ok: false,
@@ -197,7 +221,10 @@ async function handleApi(request, env) {
     );
     const text = await response.text();
     if (!response.ok) {
-      console.error("Supabase CREATE product error:", text);
+      console.error(
+        "Supabase CREATE product error:",
+        text
+      );
       return json(
         {
           ok: false,
@@ -214,238 +241,201 @@ async function handleApi(request, env) {
       return json(
         {
           ok: false,
-          error: "Product was created, but Supabase returned an invalid response."
+          error:
+            "Product was created, but Supabase returned an invalid response."
         },
         500
       );
     }
-    return json({
-      ok: true,
-      product: Array.isArray(created) ? created[0] : created
-    }, 201);
-  }
-    // CREATE PAYMONGO CHECKOUT
-
-  if (
-
-    request.method === "POST" &&
-
-    url.pathname === "/api/create-checkout"
-
-  ) {
-
-    if (!env.PAYMONGO_SECRET_KEY) {
-
-      return json(
-
-        {
-
-          ok: false,
-
-          error: "PayMongo secret key is not configured."
-
-        },
-
-        500
-
-      );
-
-    }
-
-    let body;
-
-    try {
-
-      body = await request.json();
-
-    } catch {
-
-      return json(
-
-        {
-
-          ok: false,
-
-          error: "Invalid JSON request body."
-
-        },
-
-        400
-
-      );
-
-    }
-
-    const name = String(body.name || "").trim();
-
-    const price = Number(body.price);
-
-    const quantity = Number(body.quantity || 1);
-
-    if (!name || !Number.isFinite(price) || price <= 0) {
-
-      return json(
-
-        {
-
-          ok: false,
-
-          error: "Valid product information is required."
-
-        },
-
-        400
-
-      );
-
-    }
-
-    if (!Number.isInteger(quantity) || quantity < 1) {
-
-      return json(
-
-        {
-
-          ok: false,
-
-          error: "Valid quantity is required."
-
-        },
-
-        400
-
-      );
-
-    }
-
-    const origin =
-
-      request.headers.get("Origin") ||
-
-      "https://fashion-fabric-marketplace.sabrinaspellman62216221.workers.dev";
-
-    const response = await fetch(
-
-      "https://api.paymongo.com/v2/checkout_sessions",
-
+    return json(
       {
-
-        method: "POST",
-
-        headers: {
-
-          "Authorization":
-
-            `Basic ${btoa(env.PAYMONGO_SECRET_KEY + ":")}`,
-
-          "Content-Type": "application/json"
-
-        },
-
-        body: JSON.stringify({
-
-          data: {
-
-            attributes: {
-
-              line_items: [
-
-                {
-
-                  name: name,
-
-                  amount: Math.round(price * 100),
-
-                  currency: "PHP",
-
-                  quantity: quantity
-
-                }
-
-              ],
-
-              payment_method_types: [
-
-                "card",
-
-                "gcash",
-
-                "qrph"
-
-              ],
-
-              success_url:
-
-                `${origin}/?payment=success`,
-
-              cancel_url:
-
-                `${origin}/?payment=cancelled`
-
-            }
-
-          }
-
-        })
-
-      }
-
+        ok: true,
+        product: Array.isArray(created)
+          ? created[0]
+          : created
+      },
+      201
     );
-
-    const text = await response.text();
-
-    if (!response.ok) {
-
-      console.error("PayMongo error:", text);
-
+  }
+  // CREATE PAYMONGO CHECKOUT
+  if (
+    request.method === "POST" &&
+    url.pathname === "/api/create-checkout"
+  ) {
+    if (!env.PAYMONGO_SECRET_KEY) {
       return json(
-
         {
-
           ok: false,
-
-          error: "PayMongo checkout could not be created."
-
+          error:
+            "PayMongo secret key is not configured."
         },
-
-        response.status
-
-      );
-
-    }
-
-    const data = JSON.parse(text);
-
-    const checkoutUrl =
-
-      data?.data?.attributes?.checkout_url;
-
-    if (!checkoutUrl) {
-
-      return json(
-
-        {
-
-          ok: false,
-
-          error: "PayMongo did not return a checkout URL."
-
-        },
-
         500
-
       );
-
     }
-
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return json(
+        {
+          ok: false,
+          error: "Invalid JSON request body."
+        },
+        400
+      );
+    }
+    const name = String(body.name || "").trim();
+    const price = Number(body.price);
+    const quantity = Number(body.quantity || 1);
+    if (
+      !name ||
+      !Number.isFinite(price) ||
+      price <= 0
+    ) {
+      return json(
+        {
+          ok: false,
+          error:
+            "Valid product information is required."
+        },
+        400
+      );
+    }
+    if (
+      !Number.isInteger(quantity) ||
+      quantity < 1
+    ) {
+      return json(
+        {
+          ok: false,
+          error: "Valid quantity is required."
+        },
+        400
+      );
+    }
+    const origin =
+      request.headers.get("Origin") ||
+      "https://fashion-fabric-marketplace.sabrinaspellman62216221.workers.dev";
+    const response = await fetch(
+      "https://api.paymongo.com/v2/checkout_sessions",
+      {
+        method: "POST",
+        headers: {
+          "Authorization":
+            `Basic ${btoa(
+              env.PAYMONGO_SECRET_KEY + ":"
+            )}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          data: {
+            attributes: {
+              line_items: [
+                {
+                  name: name,
+                  amount: Math.round(price * 100),
+                  currency: "PHP",
+                  quantity: quantity
+                }
+              ],
+              payment_method_types: [
+                "card",
+                "gcash",
+                "qrph"
+              ],
+              success_url:
+                `${origin}/?payment=success`,
+              cancel_url:
+                `${origin}/?payment=cancelled`
+            }
+          }
+        })
+      }
+    );
+    const text = await response.text();
+    if (!response.ok) {
+      console.error(
+        "PayMongo error:",
+        text
+      );
+      return json(
+        {
+          ok: false,
+          error:
+            "PayMongo checkout could not be created."
+        },
+        response.status
+      );
+    }
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return json(
+        {
+          ok: false,
+          error:
+            "PayMongo returned invalid JSON."
+        },
+        500
+      );
+    }
+    const checkoutUrl =
+      data?.data?.attributes?.checkout_url;
+    if (!checkoutUrl) {
+      return json(
+        {
+          ok: false,
+          error:
+            "PayMongo did not return a checkout URL."
+        },
+        500
+      );
+    }
     return json({
-
       ok: true,
-
       checkoutUrl: checkoutUrl
-
     });
-
+  }
+  // PAYMONGO WEBHOOK
+  if (
+    request.method === "POST" &&
+    url.pathname === "/api/paymongo-webhook"
+  ) {
+    let event;
+    try {
+      event = await request.json();
+    } catch {
+      return json(
+        {
+          ok: false,
+          error: "Invalid webhook JSON."
+        },
+        400
+      );
+    }
+    console.log(
+      "PayMongo webhook received:",
+      JSON.stringify(event)
+    );
+    const eventType =
+      event?.data?.attributes?.type;
+    if (
+      eventType ===
+      "checkout_session.payment.paid"
+    ) {
+      console.log(
+        "PAYMENT PAID:",
+        JSON.stringify(
+          event?.data?.attributes?.data || {}
+        )
+      );
+    }
+    return json({
+      ok: true,
+      received: true
+    });
+  }
   return json(
     {
       ok: false,
@@ -512,7 +502,8 @@ export default {
         return json(
           {
             ok: false,
-            error: "Static asset binding is not configured."
+            error:
+              "Static asset binding is not configured."
           },
           500
         );
