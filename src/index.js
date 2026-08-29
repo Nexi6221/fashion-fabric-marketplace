@@ -32,11 +32,20 @@ function corsHeaders(origin, env) {
   return {};
 }
 function isAllowedOrigin(request, env) {
+  const origin = request.headers.get("Origin");
+  const requestUrl = new URL(request.url);
+
+  if (origin === requestUrl.origin) {
+    return true;
+  }
+
   const allowedOrigin = env.ALLOWED_ORIGIN;
+
   if (!allowedOrigin) {
     return false;
   }
-  return request.headers.get("Origin") === allowedOrigin;
+
+  return origin === allowedOrigin;
 }
 function supabaseHeaders(env, extra = {}) {
   return {
