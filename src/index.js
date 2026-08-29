@@ -92,7 +92,7 @@ async function handleApi(request, env) {
   payMongoConfigured: Boolean(
     env.PAYMONGO_SECRET_KEY
   ),
-  geminiConfigured: Boolean(env.GEMINI_API_KEY)
+  geminiConfigured: Boolean(env.THREAD_LOOM_GEMINI_KEY)
 });
   }
 
