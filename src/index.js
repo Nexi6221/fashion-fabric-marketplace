@@ -215,6 +215,229 @@ async function handleApi(request, env) {
       product: Array.isArray(created) ? created[0] : created
     }, 201);
   }
+    // CREATE PAYMONGO CHECKOUT
+
+  if (
+
+    request.method === "POST" &&
+
+    url.pathname === "/api/create-checkout"
+
+  ) {
+
+    if (!env.PAYMONGO_SECRET_KEY) {
+
+      return json(
+
+        {
+
+          ok: false,
+
+          error: "PayMongo secret key is not configured."
+
+        },
+
+        500
+
+      );
+
+    }
+
+    let body;
+
+    try {
+
+      body = await request.json();
+
+    } catch {
+
+      return json(
+
+        {
+
+          ok: false,
+
+          error: "Invalid JSON request body."
+
+        },
+
+        400
+
+      );
+
+    }
+
+    const name = String(body.name || "").trim();
+
+    const price = Number(body.price);
+
+    const quantity = Number(body.quantity || 1);
+
+    if (!name || !Number.isFinite(price) || price <= 0) {
+
+      return json(
+
+        {
+
+          ok: false,
+
+          error: "Valid product information is required."
+
+        },
+
+        400
+
+      );
+
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+
+      return json(
+
+        {
+
+          ok: false,
+
+          error: "Valid quantity is required."
+
+        },
+
+        400
+
+      );
+
+    }
+
+    const origin =
+
+      request.headers.get("Origin") ||
+
+      "https://fashion-fabric-marketplace.sabrinaspellman62216221.workers.dev";
+
+    const response = await fetch(
+
+      "https://api.paymongo.com/v2/checkout_sessions",
+
+      {
+
+        method: "POST",
+
+        headers: {
+
+          "Authorization":
+
+            `Basic ${btoa(env.PAYMONGO_SECRET_KEY + ":")}`,
+
+          "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+          data: {
+
+            attributes: {
+
+              line_items: [
+
+                {
+
+                  name: name,
+
+                  amount: Math.round(price * 100),
+
+                  currency: "PHP",
+
+                  quantity: quantity
+
+                }
+
+              ],
+
+              payment_method_types: [
+
+                "card",
+
+                "gcash",
+
+                "qrph"
+
+              ],
+
+              success_url:
+
+                `${origin}/?payment=success`,
+
+              cancel_url:
+
+                `${origin}/?payment=cancelled`
+
+            }
+
+          }
+
+        })
+
+      }
+
+    );
+
+    const text = await response.text();
+
+    if (!response.ok) {
+
+      console.error("PayMongo error:", text);
+
+      return json(
+
+        {
+
+          ok: false,
+
+          error: "PayMongo checkout could not be created."
+
+        },
+
+        response.status
+
+      );
+
+    }
+
+    const data = JSON.parse(text);
+
+    const checkoutUrl =
+
+      data?.data?.attributes?.checkout_url;
+
+    if (!checkoutUrl) {
+
+      return json(
+
+        {
+
+          ok: false,
+
+          error: "PayMongo did not return a checkout URL."
+
+        },
+
+        500
+
+      );
+
+    }
+
+    return json({
+
+      ok: true,
+
+      checkoutUrl: checkoutUrl
+
+    });
+
+  }
   return json(
     {
       ok: false,
