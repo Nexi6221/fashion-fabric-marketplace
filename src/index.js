@@ -511,16 +511,17 @@ async function handleApi(request, env) {
     const text = await response.text();
 
     if (!response.ok) {
-      console.error("Gemini API error:", text);
+  console.error("Gemini API error:", text);
 
-      return json(
-        {
-          ok: false,
-          error: "Gemini could not generate a response."
-        },
-        response.status
-      );
-    }
+  return json(
+    {
+      ok: false,
+      error: "Gemini API error.",
+      details: text
+    },
+    response.status
+  );
+}
 
     let data;
 
