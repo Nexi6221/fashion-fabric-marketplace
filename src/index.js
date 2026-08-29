@@ -501,7 +501,7 @@ async function handleApi(request, env) {
     request.method === "POST" &&
     url.pathname === "/api/chat"
   ) {
-    if (!env.GEMINI_API_KEY) {
+    if (!env.THREAD_LOOM_GEMINI_KEY) {
       return json(
         {
           ok: false,
@@ -544,7 +544,7 @@ async function handleApi(request, env) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-goog-api-key": env.GEMINI_API_KEY
+         "x-goog-api-key": env.THREAD_LOOM_GEMINI_KEY
         },
         body: JSON.stringify({
           system_instruction: {
