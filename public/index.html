@@ -2854,6 +2854,15 @@ document.addEventListener("click", async function (event) {
   }
 alert("BUY HANDLER PASSED LOGIN");
   const productId = buyButton.dataset.productId;
+  const checkoutModal =
+  document.getElementById("checkoutModal");
+
+if (!checkoutModal) {
+  alert("CHECKOUT MODAL NOT FOUND");
+  return;
+}
+
+checkoutModal.style.display = "block";
   const checkoutModal = document.getElementById("checkoutModal");
 
 if (!checkoutModal) {
