@@ -2728,7 +2728,7 @@ async function loadProducts() {
           </button>
 
           <button
-            class="button button-outline"
+            class="button button-outline review-product-button"
             type="button"
             data-product-id="${product.id}"
           >
@@ -2741,53 +2741,37 @@ async function loadProducts() {
     `;
 
     productsGrid.appendChild(card);
+  const reviewButton = card.querySelector(".review-product-button");
 
-const reviewButton = card.querySelector(
-  ".review-product-button"
-);
-
-reviewButton.addEventListener(
-  "click",
-  function () {
-
+if (reviewButton) {
+  reviewButton.addEventListener("click", function () {
     if (!currentUser) {
       openAuthModal(false);
-
       setMessage(
         authMessage,
         "Please sign in before submitting a review."
       );
-
       return;
     }
 
-    const productId =
-      reviewButton.dataset.productId;
+    const productId = reviewButton.dataset.productId;
 
-    const rating = prompt(
-      "Enter a rating from 1 to 5:"
-    );
+    const rating = prompt("Enter a rating from 1 to 5:");
 
     if (!rating) return;
 
-    const ratingNumber =
-      Number(rating);
+    const ratingNumber = Number(rating);
 
     if (
       !Number.isInteger(ratingNumber) ||
       ratingNumber < 1 ||
       ratingNumber > 5
     ) {
-      alert(
-        "Please enter a rating from 1 to 5."
-      );
-
+      alert("Please enter a rating from 1 to 5.");
       return;
     }
 
-    const comment = prompt(
-      "Write your review:"
-    );
+    const comment = prompt("Write your review:");
 
     if (comment === null) return;
 
@@ -2795,9 +2779,8 @@ reviewButton.addEventListener(
       "Review button is working! Product ID: " +
       productId
     );
-  }
-);
-
+  });
+}
   });
 
   filterProducts();
