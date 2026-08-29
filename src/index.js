@@ -446,7 +446,6 @@ async function handleApi(request, env) {
 
     });
 
-  }
   return json(
     {
       ok: false,
