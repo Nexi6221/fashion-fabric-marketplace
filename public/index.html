@@ -2855,27 +2855,47 @@ document.addEventListener("click", async function (event) {
 
   const productId = buyButton.dataset.productId;
 
-  const { data: product, error } = await supabaseClient
-  .from("products")
-  .select("id, name, price")
-  .eq("id", productId)
-  .single();
+  const checkoutModal =
+    document.getElementById("checkoutModal");
 
-if (error || !product) {
-  console.error("Could not load product:", error);
-  alert("Could not load this product.");
-  return;
-}
+  if (!checkoutModal) {
+    alert("Checkout form is missing.");
+    console.error("checkoutModal was not found.");
+    return;
+  }
 
-document.getElementById("checkoutProductName").textContent =
-  product.name;
+  const productName =
+    document.getElementById("checkoutProductName");
 
-document.getElementById("checkoutProductPrice").textContent =
-  "Price: ₱" + Number(product.price).toFixed(2);
+  const productPrice =
+    document.getElementById("checkoutProductPrice");
 
-document.getElementById("checkoutModal").style.display = "block";
+  if (!productName || !productPrice) {
+    alert("Checkout form is incomplete.");
+    return;
+  }
+
+  const { data: product, error } =
+    await supabaseClient
+      .from("products")
+      .select("id, name, price")
+      .eq("id", productId)
+      .single();
+
+  if (error || !product) {
+    console.error("Could not load product:", error);
+    alert("Could not load this product.");
+    return;
+  }
+
+  productName.textContent = product.name;
+
+  productPrice.textContent =
+    "Price: ₱" +
+    Number(product.price).toFixed(2);
+
+  checkoutModal.style.display = "block";
 });
-
 async function loadSellerProductCount() {
   if (!currentUser || currentUserRole !== "seller") {
     document.getElementById("dashboardProducts").textContent = "0";
