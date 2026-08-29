@@ -2855,7 +2855,54 @@ document.addEventListener("click", async function (event) {
 
   const productId = buyButton.dataset.productId;
 
-  alert("Buy button is working! Product ID: " + productId);
+  const { data: product, error } =
+    await supabaseClient
+      .from("products")
+      .select("id, name, price")
+      .eq("id", productId)
+      .single();
+
+  if (error || !product) {
+    console.error("Could not load product:", error);
+    alert("Could not load this product.");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/create-checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: product.name,
+        price: Number(product.price),
+        quantity: 1
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      console.error("Checkout error:", result);
+      alert(
+        result.error ||
+        "Could not create the PayMongo checkout."
+      );
+      return;
+    }
+
+    if (!result.checkoutUrl) {
+      alert("PayMongo did not return a checkout URL.");
+      return;
+    }
+
+    window.location.href = result.checkoutUrl;
+
+  } catch (error) {
+    console.error("Checkout request failed:", error);
+    alert("Could not connect to the payment service.");
+  }
 });
 async function loadSellerProductCount() {
   if (!currentUser || currentUserRole !== "seller") {
