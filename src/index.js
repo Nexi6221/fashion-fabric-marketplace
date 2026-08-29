@@ -2,12 +2,14 @@ const JSON_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
   "Cache-Control": "no-store"
 };
+
 const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "X-Frame-Options": "DENY",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
 };
+
 function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
@@ -18,8 +20,10 @@ function json(data, status = 200, extraHeaders = {}) {
     }
   });
 }
+
 function corsHeaders(origin, env) {
   const allowedOrigin = env.ALLOWED_ORIGIN || "";
+
   if (allowedOrigin && origin === allowedOrigin) {
     return {
       "Access-Control-Allow-Origin": origin,
@@ -29,20 +33,27 @@ function corsHeaders(origin, env) {
       "Vary": "Origin"
     };
   }
+
   return {};
 }
+
 function isAllowedOrigin(request, env) {
   const origin = request.headers.get("Origin");
   const requestUrl = new URL(request.url);
+
   if (origin === requestUrl.origin) {
     return true;
   }
+
   const allowedOrigin = env.ALLOWED_ORIGIN;
+
   if (!allowedOrigin) {
     return false;
   }
+
   return origin === allowedOrigin;
 }
+
 function supabaseHeaders(env, extra = {}) {
   return {
     "apikey": env.SUPABASE_PUBLISHABLE_KEY,
@@ -51,8 +62,10 @@ function supabaseHeaders(env, extra = {}) {
     ...extra
   };
 }
+
 async function handleApi(request, env) {
   const url = new URL(request.url);
+
   // HEALTH
   if (
     request.method === "GET" &&
@@ -64,6 +77,7 @@ async function handleApi(request, env) {
       environment: env.ENVIRONMENT || "production"
     });
   }
+
   // STATUS
   if (
     request.method === "GET" &&
@@ -77,9 +91,13 @@ async function handleApi(request, env) {
       ),
       payMongoConfigured: Boolean(
         env.PAYMONGO_SECRET_KEY
+      ),
+      geminiConfigured: Boolean(
+        env.GEMINI_API_KEY
       )
     });
   }
+
   // GET PRODUCTS
   if (
     request.method === "GET" &&
@@ -97,18 +115,22 @@ async function handleApi(request, env) {
         500
       );
     }
+
     const response = await fetch(
       `${env.SUPABASE_URL}/rest/v1/products?select=*`,
       {
         headers: supabaseHeaders(env)
       }
     );
+
     const text = await response.text();
+
     if (!response.ok) {
       console.error(
         "Supabase GET products error:",
         text
       );
+
       return json(
         {
           ok: false,
@@ -118,7 +140,9 @@ async function handleApi(request, env) {
         response.status
       );
     }
+
     let products = [];
+
     try {
       products = JSON.parse(text);
     } catch {
@@ -130,6 +154,7 @@ async function handleApi(request, env) {
         500
       );
     }
+
     return json({
       ok: true,
       products: Array.isArray(products)
@@ -137,6 +162,7 @@ async function handleApi(request, env) {
         : []
     });
   }
+
   // CREATE PRODUCT
   if (
     request.method === "POST" &&
@@ -154,7 +180,9 @@ async function handleApi(request, env) {
         500
       );
     }
+
     let body;
+
     try {
       body = await request.json();
     } catch {
@@ -166,6 +194,7 @@ async function handleApi(request, env) {
         400
       );
     }
+
     const product = {
       name: body.name,
       description: body.description || "",
@@ -176,6 +205,7 @@ async function handleApi(request, env) {
       image_url: body.image_url || "",
       seller_id: body.seller_id || null
     };
+
     if (!product.name) {
       return json(
         {
@@ -185,6 +215,7 @@ async function handleApi(request, env) {
         400
       );
     }
+
     if (
       !Number.isFinite(product.price) ||
       product.price < 0
@@ -197,6 +228,7 @@ async function handleApi(request, env) {
         400
       );
     }
+
     if (
       !Number.isFinite(product.stock) ||
       product.stock < 0
@@ -209,6 +241,7 @@ async function handleApi(request, env) {
         400
       );
     }
+
     const response = await fetch(
       `${env.SUPABASE_URL}/rest/v1/products`,
       {
@@ -219,12 +252,15 @@ async function handleApi(request, env) {
         body: JSON.stringify(product)
       }
     );
+
     const text = await response.text();
+
     if (!response.ok) {
       console.error(
         "Supabase CREATE product error:",
         text
       );
+
       return json(
         {
           ok: false,
@@ -234,7 +270,9 @@ async function handleApi(request, env) {
         response.status
       );
     }
+
     let created;
+
     try {
       created = JSON.parse(text);
     } catch {
@@ -247,6 +285,7 @@ async function handleApi(request, env) {
         500
       );
     }
+
     return json(
       {
         ok: true,
@@ -257,6 +296,7 @@ async function handleApi(request, env) {
       201
     );
   }
+
   // CREATE PAYMONGO CHECKOUT
   if (
     request.method === "POST" &&
@@ -272,7 +312,9 @@ async function handleApi(request, env) {
         500
       );
     }
+
     let body;
+
     try {
       body = await request.json();
     } catch {
@@ -284,9 +326,11 @@ async function handleApi(request, env) {
         400
       );
     }
+
     const name = String(body.name || "").trim();
     const price = Number(body.price);
     const quantity = Number(body.quantity || 1);
+
     if (
       !name ||
       !Number.isFinite(price) ||
@@ -301,6 +345,7 @@ async function handleApi(request, env) {
         400
       );
     }
+
     if (
       !Number.isInteger(quantity) ||
       quantity < 1
@@ -313,9 +358,11 @@ async function handleApi(request, env) {
         400
       );
     }
+
     const origin =
       request.headers.get("Origin") ||
       "https://fashion-fabric-marketplace.sabrinaspellman62216221.workers.dev";
+
     const response = await fetch(
       "https://api.paymongo.com/v2/checkout_sessions",
       {
@@ -352,12 +399,15 @@ async function handleApi(request, env) {
         })
       }
     );
+
     const text = await response.text();
+
     if (!response.ok) {
       console.error(
         "PayMongo error:",
         text
       );
+
       return json(
         {
           ok: false,
@@ -367,7 +417,9 @@ async function handleApi(request, env) {
         response.status
       );
     }
+
     let data;
+
     try {
       data = JSON.parse(text);
     } catch {
@@ -380,8 +432,10 @@ async function handleApi(request, env) {
         500
       );
     }
+
     const checkoutUrl =
       data?.data?.attributes?.checkout_url;
+
     if (!checkoutUrl) {
       return json(
         {
@@ -392,17 +446,20 @@ async function handleApi(request, env) {
         500
       );
     }
+
     return json({
       ok: true,
       checkoutUrl: checkoutUrl
     });
   }
+
   // PAYMONGO WEBHOOK
   if (
     request.method === "POST" &&
     url.pathname === "/api/paymongo-webhook"
   ) {
     let event;
+
     try {
       event = await request.json();
     } catch {
@@ -414,12 +471,15 @@ async function handleApi(request, env) {
         400
       );
     }
+
     console.log(
       "PayMongo webhook received:",
       JSON.stringify(event)
     );
+
     const eventType =
       event?.data?.attributes?.type;
+
     if (
       eventType ===
       "checkout_session.payment.paid"
@@ -431,12 +491,14 @@ async function handleApi(request, env) {
         )
       );
     }
+
     return json({
       ok: true,
       received: true
     });
   }
-    // GEMINI AI CHAT
+
+  // GEMINI AI CHAT
   if (
     request.method === "POST" &&
     url.pathname === "/api/chat"
@@ -465,7 +527,8 @@ async function handleApi(request, env) {
       );
     }
 
-    const message = String(body.message || "").trim();
+    const message =
+      String(body.message || "").trim();
 
     if (!message) {
       return json(
@@ -511,17 +574,20 @@ async function handleApi(request, env) {
     const text = await response.text();
 
     if (!response.ok) {
-  console.error("Gemini API error:", text);
+      console.error(
+        "Gemini API error:",
+        text
+      );
 
-  return json(
-    {
-      ok: false,
-      error: "Gemini API error.",
-      details: text
-    },
-    response.status
-  );
-}
+      return json(
+        {
+          ok: false,
+          error: "Gemini API error.",
+          details: text
+        },
+        response.status
+      );
+    }
 
     let data;
 
@@ -555,6 +621,7 @@ async function handleApi(request, env) {
       reply: reply
     });
   }
+
   return json(
     {
       ok: false,
@@ -563,12 +630,14 @@ async function handleApi(request, env) {
     404
   );
 }
+
 export default {
   async fetch(request, env) {
     try {
       const url = new URL(request.url);
       const origin = request.headers.get("Origin");
       const cors = corsHeaders(origin, env);
+
       if (request.method === "OPTIONS") {
         if (!isAllowedOrigin(request, env)) {
           return new Response(null, {
@@ -576,6 +645,7 @@ export default {
             headers: SECURITY_HEADERS
           });
         }
+
         return new Response(null, {
           status: 204,
           headers: {
@@ -584,6 +654,7 @@ export default {
           }
         });
       }
+
       if (url.pathname.startsWith("/api/")) {
         if (
           origin &&
@@ -597,18 +668,22 @@ export default {
             403
           );
         }
+
         const response = await handleApi(
           request,
           env
         );
+
         const headers = new Headers(
           response.headers
         );
+
         Object.entries(cors).forEach(
           ([key, value]) => {
             headers.set(key, value);
           }
         );
+
         return new Response(
           response.body,
           {
@@ -617,6 +692,7 @@ export default {
           }
         );
       }
+
       if (!env.ASSETS) {
         return json(
           {
@@ -627,12 +703,14 @@ export default {
           500
         );
       }
+
       return env.ASSETS.fetch(request);
     } catch (error) {
       console.error(
         "Unhandled Worker error:",
         error
       );
+
       return json(
         {
           ok: false,
