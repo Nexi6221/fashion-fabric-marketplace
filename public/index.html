@@ -2744,7 +2744,7 @@ async function loadProducts() {
   const reviewButton = card.querySelector(".review-product-button");
 
 if (reviewButton) {
-  reviewButton.addEventListener("click", function () {
+  reviewButton.addEventListener("click", async function () {
     if (!currentUser) {
       openAuthModal(false);
       setMessage(
@@ -2775,10 +2775,25 @@ if (reviewButton) {
 
     if (comment === null) return;
 
-   alert(
-  "Review button is working! Product ID: " +
-  productId
-);
+const { data: review, error: reviewError } =
+  await supabaseClient
+    .from("reviews")
+    .insert({
+      product_id: productId,
+      buyer_id: currentUser.id,
+      rating: ratingNumber,
+      review_text: comment
+    })
+    .select()
+    .single();
+
+if (reviewError) {
+  console.error("Could not submit review:", reviewError);
+  alert("Could not submit review. Please try again.");
+  return;
+}
+
+alert("Review submitted successfully!");
   });
 }
   });
