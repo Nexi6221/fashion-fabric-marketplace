@@ -2854,8 +2854,15 @@ document.addEventListener("click", async function (event) {
   }
 
   const productId = buyButton.dataset.productId;
+  const checkoutModal = document.getElementById("checkoutModal");
 
-  alert("BUY CLICK DETECTED: " + productId);
+if (!checkoutModal) {
+  alert("CHECKOUT MODAL NOT FOUND");
+  return;
+}
+
+alert("CHECKOUT MODAL FOUND");
+  
 });
 async function loadSellerProductCount() {
   if (!currentUser || currentUserRole !== "seller") {
