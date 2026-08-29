@@ -2745,7 +2745,53 @@ async function loadProducts() {
 
     filterProducts();
 }
+document.addEventListener("click", function (event) {
+  const reviewButton = event.target.closest(
+    ".review-product-button"
+  );
 
+  if (!reviewButton) return;
+
+  if (!currentUser) {
+    openAuthModal(false);
+    setMessage(
+      authMessage,
+      "Please sign in before submitting a review."
+    );
+    return;
+  }
+
+  const productId =
+    reviewButton.dataset.productId;
+
+  const rating = prompt(
+    "Enter a rating from 1 to 5:"
+  );
+
+  if (!rating) return;
+
+  const ratingNumber = Number(rating);
+
+  if (
+    !Number.isInteger(ratingNumber) ||
+    ratingNumber < 1 ||
+    ratingNumber > 5
+  ) {
+    alert("Please enter a rating from 1 to 5.");
+    return;
+  }
+
+  const comment = prompt(
+    "Write your review:"
+  );
+
+  if (comment === null) return;
+
+  alert(
+    "Review button is working! Product ID: " +
+    productId
+  );
+});
 
 async function loadSellerProductCount() {
   if (!currentUser || currentUserRole !== "seller") {
