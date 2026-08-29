@@ -436,6 +436,124 @@ async function handleApi(request, env) {
       received: true
     });
   }
+    // GEMINI AI CHAT
+  if (
+    request.method === "POST" &&
+    url.pathname === "/api/chat"
+  ) {
+    if (!env.GEMINI_API_KEY) {
+      return json(
+        {
+          ok: false,
+          error: "Gemini API key is not configured."
+        },
+        500
+      );
+    }
+
+    let body;
+
+    try {
+      body = await request.json();
+    } catch {
+      return json(
+        {
+          ok: false,
+          error: "Invalid JSON request body."
+        },
+        400
+      );
+    }
+
+    const message = String(body.message || "").trim();
+
+    if (!message) {
+      return json(
+        {
+          ok: false,
+          error: "Message is required."
+        },
+        400
+      );
+    }
+
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": env.GEMINI_API_KEY
+        },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [
+              {
+                text:
+                  "You are the Thread & Loom AI assistant for a fashion fabric marketplace. Help customers with fabrics, products, orders, and general shopping questions. Be friendly, concise, and helpful."
+              }
+            ]
+          },
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: message
+                }
+              ]
+            }
+          ]
+        })
+      }
+    );
+
+    const text = await response.text();
+
+    if (!response.ok) {
+      console.error("Gemini API error:", text);
+
+      return json(
+        {
+          ok: false,
+          error: "Gemini could not generate a response."
+        },
+        response.status
+      );
+    }
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return json(
+        {
+          ok: false,
+          error: "Gemini returned invalid JSON."
+        },
+        500
+      );
+    }
+
+    const reply =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!reply) {
+      return json(
+        {
+          ok: false,
+          error: "Gemini returned no response."
+        },
+        500
+      );
+    }
+
+    return json({
+      ok: true,
+      reply: reply
+    });
+  }
   return json(
     {
       ok: false,
