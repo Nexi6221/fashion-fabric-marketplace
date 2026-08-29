@@ -2855,7 +2855,25 @@ document.addEventListener("click", async function (event) {
 
   const productId = buyButton.dataset.productId;
 
-  alert("Buy button is working! Product ID: " + productId);
+  const { data: product, error } = await supabaseClient
+  .from("products")
+  .select("id, name, price")
+  .eq("id", productId)
+  .single();
+
+if (error || !product) {
+  console.error("Could not load product:", error);
+  alert("Could not load this product.");
+  return;
+}
+
+document.getElementById("checkoutProductName").textContent =
+  product.name;
+
+document.getElementById("checkoutProductPrice").textContent =
+  "Price: ₱" + Number(product.price).toFixed(2);
+
+document.getElementById("checkoutModal").style.display = "block";
 });
 
 async function loadSellerProductCount() {
@@ -3169,5 +3187,43 @@ supabaseClient.auth.onAuthStateChange(
       =========================================================
     */
   </script>
+  </script>
+
+<div id="checkoutModal" style="display:none;">
+  <div>
+    <h2>Checkout</h2>
+
+    <p id="checkoutProductName"></p>
+    <p id="checkoutProductPrice"></p>
+
+    <label>
+      Recipient Name
+      <input id="checkoutRecipientName" type="text">
+    </label>
+
+    <label>
+      Phone Number
+      <input id="checkoutRecipientPhone" type="tel">
+    </label>
+
+    <label>
+      Shipping Address
+      <textarea id="checkoutShippingAddress"></textarea>
+    </label>
+
+    <button id="checkoutContinueButton" type="button">
+      Continue to Payment
+    </button>
+
+    <button id="checkoutCancelButton" type="button">
+      Cancel
+    </button>
+
+    <p id="checkoutMessage"></p>
+  </div>
+</div>
+
+</body>
+</html>
 </body>
 </html>
