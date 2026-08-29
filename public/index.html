@@ -2753,11 +2753,50 @@ if (reviewButton) {
       );
       return;
     }
+const productId = reviewButton.dataset.productId;
 
-    const productId = reviewButton.dataset.productId;
+const { data: orders, error: ordersError } =
+  await supabaseClient
+    .from("orders")
+    .select("id")
+    .eq("buyer_id", currentUser.id);
 
-    const rating = prompt("Enter a rating from 1 to 5:");
+if (ordersError) {
+  console.error("Could not find orders:", ordersError);
+  alert("Could not verify your purchase.");
+  return;
+}
 
+const orderIds = (orders || []).map(function (order) {
+  return order.id;
+});
+
+if (orderIds.length === 0) {
+  alert("You can only review a product you purchased.");
+  return;
+}
+
+const { data: orderItem, error: orderItemError } =
+  await supabaseClient
+    .from("order_items")
+    .select("id")
+    .eq("product_id", productId)
+    .in("order_id", orderIds)
+    .limit(1)
+    .maybeSingle();
+
+if (orderItemError) {
+  console.error("Could not find order item:", orderItemError);
+  alert("Could not verify your purchase.");
+  return;
+}
+
+if (!orderItem) {
+  alert("You can only review a product you purchased.");
+  return;
+}
+
+const rating = prompt("Enter a rating from 1 to 5:");
     if (!rating) return;
 
     const ratingNumber = Number(rating);
